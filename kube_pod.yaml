@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: seatbooking-pod
+  labels:
+    app: seatbooking-app
+    name: seatbooking-pod
+spec:
+  containers:
+  - name: seatbooking-container
+    image: dhamodaran/seatbooking_api:latest
+    ports:
+    - containerPort:  3000

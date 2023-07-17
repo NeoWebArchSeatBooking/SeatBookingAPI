@@ -1,0 +1,65 @@
+name: Stage CI
+
+on:
+  pull_request:
+    branches: ["stage"]
+    types: ["closed"]
+env:
+  TEST_TAG: seatbooking_api:test
+
+jobs:
+  build:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+  lint:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "npm"
+      - run: npm ci
+      - run: npm run lint
+  build_dkr_and_ping:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    needs: ["build", "lint"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup docker buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build docker
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          load: true
+          tags: ${{ env.TEST_TAG }}
+      - name: Test Docker Container
+        run: |
+          docker run -d -p 8081:3000 --name node_api ${{ env.TEST_TAG }}
+          sleep 30
+          docker ps
+          if curl http://localhost:8081/api/health > HTML_output
+          then exit 0
+          else exit 1
+          fi
+          docker stop node_api
