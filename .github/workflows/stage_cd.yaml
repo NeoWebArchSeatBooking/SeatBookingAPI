@@ -42,7 +42,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMG_NAME }}:${{env.BUILD_TS}}
   trigger_cd:
     runs-on: ubuntu_latest
-    needs: []
+    needs: ['build_docker']
     steps:
       - name: print tags
         run:  echo ${{ env.BUILD_TS }}
