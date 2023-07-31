@@ -50,7 +50,10 @@ jobs:
           script: |
             github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
-              repo: 'NeoWebArchSeatBooking/KIaC',
-              workflow_id: 'sb_api.yaml',
+              repo: 'KIaC',
+              workflow_id: 'sb_api.yml',
               ref: 'main',
+              inputs: {
+                "tags": "test"
+              }
             })
