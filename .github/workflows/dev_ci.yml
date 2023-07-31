@@ -41,4 +41,4 @@ jobs:
     steps:
       - name: verify 
         run: |
-          curl -XPOST -u "${{ secrets.PAT_USERNAME}}:${{secrets.PAT_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/NeoWebArchSeatBooking/KIaC/actions/workflows/sb_api.yaml/dispatches --data '{"ref": "main"}'
+          curl -XPOST -u "${{ secrets.PAT_USERNAME}}:${{secrets.PAT_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/NeoWebArchSeatBooking/KIaC/actions/workflows/sb_api.yml/dispatches --data '{"ref": "main"}'
