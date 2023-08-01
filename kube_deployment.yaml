@@ -11,24 +11,24 @@ spec:
     name: seatbooking-pod
   type: NodePort
   ports:
-  - protocol: TCP
-    port: 3000
-    targetPort: 3000 
-    nodePort: 30002
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30002
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  seatbooking-deployment
+  name: seatbooking-deployment
   labels:
-    app:  seatbooking-app
+    app: seatbooking-app
     name: seatbooking-deployment
 spec:
   selector:
     matchLabels:
       app: seatbooking-app
       name: seatbooking-pod
-  replicas: 3
+  #replicas: 3
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -42,7 +42,14 @@ spec:
         name: seatbooking-pod
     spec:
       containers:
-      - name: seatbooking-container
-        image: dhamodaran/seatbooking_api:latest
-        ports:
-        - containerPort:  3000    
+        - name: seatbooking-container
+          image: dhamodaran/seatbooking_api:latest
+          resources:
+            limits:
+              cpu: 200m
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          ports:
+            - containerPort: 3000
