@@ -31,8 +31,10 @@
     "class-validator": "^0.14.0",
     "koa": "^2.14.2",
     "koa-bodyparser": "^4.4.1",
+    "mysql2": "^3.6.0",
     "reflect-metadata": "^0.1.13",
-    "routing-controllers": "^0.10.4"
+    "routing-controllers": "^0.10.4",
+    "sequelize": "^6.32.1"
   },
   "devDependencies": {
     "@types/koa": "^2.13.6",
