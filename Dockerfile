@@ -5,6 +5,8 @@ WORKDIR /opt/app
 COPY package*.json .
 COPY tsconfig.json .
 COPY src src/
+COPY swagger-doc swagger-doc/
+
 RUN npm cache clean --force
 RUN npm install
 RUN npm run build

@@ -1,0 +1,303 @@
+openapi: 3.0.1
+info:
+  title: Seatbooking API
+  description: Seat Booking API allows google users to book a seat from a given location's facility for working.
+  version: 1.0.0
+servers:
+- url: http://localhost:4000/seat-booking
+paths:
+  /infra-info:
+    get:
+      summary: list of available location and facility
+      description: returns the list of available location and facility
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfraResponse'
+        400:
+          description: Bad Request, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+  /booking:
+    get:
+      summary: fetch user's booking details
+      description: fetch user's booking details if user role is user otherwise fetch all user's booking details for given date
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      - name: viewRole
+        in: query
+        description: default user, valid values are user,admin
+        required: false
+        schema:
+          type: string
+      - name: date
+        in: query
+        description: required only if viewRole is admin and user is admin, dd-mm-yyyy format
+        required: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        400:
+          description: Bad Request, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+    post:
+      summary: book a seat 
+      description: book a seat on specific date 
+      requestBody:
+        description: booking information
+        $ref: '#/components/requestBodies/BookingRequest'
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        400:
+          description: Bad Request, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+  /available-seats:
+    get:
+      summary: fetch available seats to book
+      description: fetch available seats for the given inputs such as location, block, floor and date
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer token
+        required: true
+        schema:
+          type: string
+      - name: date
+        in: query
+        description: dd-mm-yyyy format
+        required: true
+        schema:
+          type: string
+      - name: locationId
+        in: query
+        description: specific location id
+        required: true
+        schema:
+          type: string
+      - name: blockId
+        in: query
+        description: specific block
+        required: true
+        schema:
+          type: string
+      - name: floorId
+        in: query
+        description: specific floor 
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatingResponse'
+        400:
+          description: Bad Request, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+components:
+  schemas:
+    Metadata:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: "http status code"
+        message:
+          type: string
+    InfraFloor:
+      type: object
+      properties:
+        floorId:
+          type: string
+        status:
+          type: string
+    InfraBlock:
+      type: object
+      properties:
+        blockId:
+          type: string
+        blockName:
+          type: string
+        floors:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfraFloor'
+    InfraLocation:
+      type: object
+      properties:
+        locationId:
+          type: string
+        locationName:
+          type: string
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfraBlock'
+    BookedSeatInfo:
+      type: object
+      properties:
+        locationId:
+          type: string
+        blockId:
+          type: string
+        floorId:
+          type: string
+        seatId:
+          type: string
+    SeatInfo:
+      allOf:
+      - $ref: '#/components/schemas/BookedSeatInfo'
+      - type: object
+        properties:
+          date:
+            type: string
+            description: dd-mm-yyyy format
+    BookingPayload:
+      type: object
+      properties:
+        bookingId:
+          type: number
+        bookingDate:
+          type: string
+        userId:
+          type: string
+        status:
+          type: string
+        seatInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookedSeatInfo'
+    SeatingPayload:
+      type: object
+      properties:
+        available:
+          type: boolean
+        seatId:
+          type: string
+        seatType:
+          type: string
+        seatPosition:
+          type: string
+    InfraResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        _meta:
+          $ref: '#/components/schemas/Metadata'
+        infras:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfraLocation'
+    BookingResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        _meta:
+          $ref: '#/components/schemas/Metadata'
+        bookings:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingPayload'
+    SeatingResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        _meta:
+          $ref: '#/components/schemas/Metadata'
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatingPayload'
+    InvalidResponse:
+      type: object
+      properties:
+        _meta:
+          $ref: '#/components/schemas/Metadata'
+  requestBodies:
+    BookingRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SeatInfo'
+          example: 
+            book:  
+            value:
+              locationId: 'L1'
+              blockId: 'B11'
+              floorId: 'F1'
+              seatId: 'A302'
+              date: '06-08-2023'            
+            

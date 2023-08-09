@@ -1,4 +1,4 @@
-import {infraDataAccess} from "../db/InfraDataAccess"
+import {infraDataAccess} from "../dataaccess/InfraDataAccess"
 import { InfraPayload, InfraResponse } from "../models";
 
 export class InfraService{

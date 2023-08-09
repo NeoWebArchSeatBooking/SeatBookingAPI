@@ -1,19 +1,20 @@
-import { BaseResponse } from "./BaseResponse"
+import { SeatArnmentType, SeatType } from "./Infrastructure"
 
 export class Booking{
     id: number
-    eId: string
+    userId: string
     date: string
     status: string
-    seatInformation: SeatInfo
+    seatInformation: BookedSeat
 }
 
-export class SeatInfo{
-    buildingId: number
-    floorId: number
+export class BookedSeat{
+    locationId: string
+    blockId: string
+    floorId: string
     seatId: string
 }
 
-export class BookingResponse extends BaseResponse{
-    items: Booking[]
+export class SeatInfo extends SeatType{
+    available: boolean
 }

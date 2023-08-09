@@ -10,4 +10,7 @@ export class HealthRouter {
     ResponseHelper.setSuccessResponse(response);
     return response;
   }
+
+  
+
 }

@@ -1,6 +1,10 @@
 import { createKoaServer } from "routing-controllers";
 import { HealthRouter, InfraRouter, BookingRouter } from "./routers";
 import { sbConnector } from "./helpers/DBProvider";
+const yamljs = require('yamljs');
+import {koaSwagger} from 'koa2-swagger-ui';
+
+const spec = yamljs.load('./swagger-doc/swagger.yaml')
 
 sbConnector.authenticate().then((val)=>{
   console.log("DB Connected")
@@ -15,6 +19,7 @@ const app = createKoaServer({
   controllers: [HealthRouter, InfraRouter,BookingRouter],
 });
 
+app.use(koaSwagger({routePrefix:false,swaggerOptions: { spec }}))
 
 app.listen(port, () => {
   console.log(`server started and listening at ${port}`);
