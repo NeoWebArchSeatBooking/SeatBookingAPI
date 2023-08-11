@@ -1,22 +1,18 @@
-
 # SeatBooking API
 
 This API provides various endpoints to fetch user seat preferences, infra facility information, seat booking history, available seats on given specific criteria and allows to pick & book seat.
- 
-
-
-## API Reference
-
-#### Get Infrastructure
-
-# Seatbooking API
-Seat Booking API allows google users to book a seat from a given location's facility for working.
 
 ## Version: 1.0.0
 
-### /infra-info
+## API Reference
+
+### /v1/seat-management
+### Get Infrastructure Information
 
 #### GET
+html'''
+/infra-information
+'''
 ##### Summary:
 
 list of available location and facility
