@@ -68,7 +68,9 @@ export class WingSeats{
 */
 
 export class InfraPayload{
-  locations: Location[];
+  locationId: string;
+  locationName: string;
+  blocks?: Block[];
 }
 
 export class SeatPayload{

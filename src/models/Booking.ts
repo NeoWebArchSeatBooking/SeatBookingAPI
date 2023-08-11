@@ -1,9 +1,9 @@
-import { SeatArnmentType, SeatType } from "./Infrastructure"
+import { SeatType } from "./Infrastructure"
 
 export class Booking{
-    id: number
+    bookingId: number
     userId: string
-    date: string
+    bookingDate: string
     status: string
     seatInformation: BookedSeat
 }

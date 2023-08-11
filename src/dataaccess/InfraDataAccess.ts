@@ -1,13 +1,10 @@
-import { ResponseHelper } from "../helpers"
-import { InfraPayload, Location, SeatPayload } from "../models"
+import { InfraPayload, SeatPayload } from "../models"
 import {INFRA_JSON,SEATS_JOSN} from "./infra"
 
 class InfraDataAccess{
 
-        public async getInfra(userId: string) : Promise<InfraPayload>{
-            const infra = new InfraPayload()
-            infra.locations = INFRA_JSON
-            return infra
+        public async getInfra() : Promise<InfraPayload[]>{
+            return INFRA_JSON
         }
 
         public async getSeats(locId: string,blkId: string,flrId:string) : Promise<SeatPayload>{

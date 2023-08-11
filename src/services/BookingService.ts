@@ -10,8 +10,8 @@ class BookingService{
     }
 
     public async getAvailableSeats(req: SeatingRequest): Promise<SeatInfo[]>{
-        const infras = await infraDataAccess.getInfra(req.userId);
-        const loc = infras.locations.find((loc)=> loc.locationId === req.locationId)
+        const infras = await infraDataAccess.getInfra();
+        const loc = infras.find((loc)=> loc.locationId === req.locationId)
         if(loc === undefined) throw new NotFoundError("location");
         const block = loc.blocks?.find((block)=>block.blockId === req.blockId)
         if(block === undefined) throw new NotFoundError("block");

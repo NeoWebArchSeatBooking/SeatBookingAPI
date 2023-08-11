@@ -11,8 +11,8 @@ This API provides various endpoints to fetch user seat preferences, infra facili
 ```
 ### Get Infrastructure Information
 #### GET
-```http
-Get /infra-information
+```
+Get /facilities
 ```
 ##### Summary:
 list of available location and facility
@@ -32,8 +32,8 @@ returns the list of available location and facility
 | 400 | Bad Request, pass valid bearer token in authroization |
 | 500 | System failed to respond |
 
-### Get the booking Information
-```http
+### Get the booked seat information
+```
 Get /seats
 ```
 ##### Summary:
@@ -57,8 +57,8 @@ fetch user's booking details if user role is user otherwise fetch all user's boo
 | 500 | System failed to respond |
 
 ### Book a seat
-```http
-Post /seat
+```
+Post /seats
 ```
 ##### Summary:
 book a seat
@@ -89,8 +89,8 @@ book a seat on specific date
 | 500 | System failed to respond |
 
 ### Fetch facility's seats information
-```http
-Get /infra-seats
+```
+Get /facilities/seats
 ```
 ##### Summary:
 fetch available seats to book
@@ -115,8 +115,8 @@ fetch available seats for the given inputs such as location, block, floor and da
 | 500 | System failed to respond |
 
 ## Swagger Document
-```http
-http://host:port/v1/seat-management/docs
+```
+http://host:port/v1/seat-management/api-docs
 ```
 
 ## Run Locally

@@ -3,11 +3,12 @@ import { ResponseHelper } from "../helpers";
 import { UserRequest, BookingResponse, SeatingRequest } from "../models";
 import { bookingService } from "../services/BookingService"
 import { SeatingResponse } from "../models/resp/SeatingResponse";
+import { AppError } from "../errors/AppErrors";
 
 @Controller()
 export class BookingRouter {
 
-  @Get("/booking")
+  @Get("/seats")
   public async getBookingInfo(
     @QueryParams() req: UserRequest
   ): Promise<BookingResponse> {
@@ -17,7 +18,7 @@ export class BookingRouter {
     return response;
   }
 
-  @Get("/available-seats")
+  @Get("/facilities/seats")
   public async getAvailableSeat(
     @QueryParams() req: SeatingRequest
   ): Promise<SeatingResponse> {
@@ -26,7 +27,7 @@ export class BookingRouter {
       response.seats = await bookingService.getAvailableSeats(req);
       ResponseHelper.setSuccessResponse(response);
     } catch (err) {
-      ResponseHelper.setFailureResponse(response,err);
+      ResponseHelper.setFailureResponse(response,err as AppError);
     }
     return response;
   }

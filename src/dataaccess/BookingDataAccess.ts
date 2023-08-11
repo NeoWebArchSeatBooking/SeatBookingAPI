@@ -1,14 +1,14 @@
 import { AppHelper } from "../helpers";
-import { BookedSeat, Booking, BookingModel, SeatInfo,SeatingRequest } from "../models";
+import { BookedSeat, Booking, BookingModel, SeatingRequest } from "../models";
 
 class BookingDataAccess{
 
     private mapToBooking(models : BookingModel[]){
         return models.map((bookingDS)=>{
             const booking = new Booking()
-            booking.date = AppHelper.reformateDate(bookingDS.bookingDate)
+            booking.bookingDate = AppHelper.reformateDate(bookingDS.bookingDate)
             booking.userId = bookingDS.bookingUserId
-            booking.id = bookingDS.id
+            booking.bookingId = bookingDS.id
             booking.status = bookingDS.bookingStatus === 'A' ? 'Active' : 'Cancelled'
             const seat = new BookedSeat()
             seat.locationId = bookingDS.bookingLocId
@@ -25,7 +25,7 @@ class BookingDataAccess{
         return this.mapToBooking(bookings)
     }
 
-    public async getBookedSeats(req: SeatingRequest): Promise<String[]> {
+    public async getBookedSeats(req: SeatingRequest): Promise<string[]> {
         const bookings = await BookingModel.findAll({
             where:{
                 bookingLocId: req.locationId,

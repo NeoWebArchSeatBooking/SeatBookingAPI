@@ -5,12 +5,12 @@ import { infraService} from "../services/InfraService"
 
 @Controller()
 export class InfraRouter {
-  @Get("/infra-info")
+  @Get("/facilities")
   public async getInfra(
     @QueryParams() req: UserRequest
   ): Promise<InfraResponse> {
     const response = new InfraResponse(req.userId);
-    response.infras = await infraService.getInfra(req.userId);
+    response.infras = await infraService.getInfra();
     ResponseHelper.setSuccessResponse(response);
     return response;
   }
