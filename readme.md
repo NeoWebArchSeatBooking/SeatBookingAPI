@@ -116,7 +116,7 @@ fetch available seats for the given inputs such as location, block, floor and da
 
 ## Swagger Document
 ```http
-/v1/seat-management/docs
+http://host:port/v1/seat-management/docs
 ```
 
 ## Run Locally
