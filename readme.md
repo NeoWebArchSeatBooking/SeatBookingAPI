@@ -5,14 +5,14 @@ This API provides various endpoints to fetch user seat preferences, infra facili
 ## Version: 1.0.0
 ## API Reference
 
-### path
+### base path
 ```
 /v1/seat-management
 ```
 ### Get Infrastructure Information
 #### GET
 ```http
-/infra-information
+Get /infra-information
 ```
 ##### Summary:
 list of available location and facility
@@ -32,19 +32,17 @@ returns the list of available location and facility
 | 400 | Bad Request, pass valid bearer token in authroization |
 | 500 | System failed to respond |
 
-### /booking
-
-#### GET
+### Get the booking Information
+```http
+Get /seats
+```
 ##### Summary:
-
 fetch user's booking details
 
 ##### Description:
-
 fetch user's booking details if user role is user otherwise fetch all user's booking details for given date
 
 ##### Parameters
-
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | Bearer token | Yes | string |
@@ -52,49 +50,55 @@ fetch user's booking details if user role is user otherwise fetch all user's boo
 | date | query | required only if viewRole is admin and user is admin, dd-mm-yyyy format | No | string |
 
 ##### Responses
-
 | Code | Description |
 | ---- | ----------- |
 | 200 | successful operation |
 | 400 | Bad Request, pass valid bearer token in authroization |
 | 500 | System failed to respond |
 
-#### POST
+### Book a seat
+```http
+Post /seat
+```
 ##### Summary:
-
 book a seat
 
 ##### Description:
-
 book a seat on specific date
 
 ##### Parameters
-
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | Bearer token | Yes | string |
 
+##### Request Body
+```
+{
+  'locationId': 'L1'
+  'blockId': 'B11'
+  'floorId': 'F1'
+  'seatId': 'A302'
+  'date': '06-08-2023'
+}
+```
 ##### Responses
-
 | Code | Description |
 | ---- | ----------- |
 | 200 | successful operation |
 | 400 | Bad Request, pass valid bearer token in authroization |
 | 500 | System failed to respond |
 
-### /available-seats
-
-#### GET
+### Fetch facility's seats information
+```http
+Get /infra-seats
+```
 ##### Summary:
-
 fetch available seats to book
 
 ##### Description:
-
 fetch available seats for the given inputs such as location, block, floor and date
 
 ##### Parameters
-
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | Bearer token | Yes | string |
@@ -104,20 +108,16 @@ fetch available seats for the given inputs such as location, block, floor and da
 | floorId | query | specific floor | Yes | string |
 
 ##### Responses
-
 | Code | Description |
 | ---- | ----------- |
 | 200 | successful operation |
 | 400 | Bad Request, pass valid bearer token in authroization |
 | 500 | System failed to respond |
 
-
-| Header | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `authorization` | `string` | **Required**. bearer token |
-
-
-
+## Swagger Document
+```http
+/v1/seat-management/docs
+```
 
 ## Run Locally
 
