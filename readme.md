@@ -3,32 +3,29 @@
 This API provides various endpoints to fetch user seat preferences, infra facility information, seat booking history, available seats on given specific criteria and allows to pick & book seat.
 
 ## Version: 1.0.0
-
 ## API Reference
 
-### /v1/seat-management
+### path
+```
+/v1/seat-management
+```
 ### Get Infrastructure Information
-
 #### GET
-html'''
+```http
 /infra-information
-'''
+```
 ##### Summary:
-
 list of available location and facility
 
 ##### Description:
-
 returns the list of available location and facility
 
 ##### Parameters
-
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | Bearer token | Yes | string |
 
 ##### Responses
-
 | Code | Description |
 | ---- | ----------- |
 | 200 | successful operation |
