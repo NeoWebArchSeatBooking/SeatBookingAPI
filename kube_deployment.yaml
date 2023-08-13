@@ -73,3 +73,5 @@ spec:
           env:
             - name: DB_HOST
               value: 192.168.65.2
+            - name: NODE_ENV
+              value: production

@@ -1,4 +1,5 @@
 import axios from "axios";
+import config from "config";
 import { Context } from "koa";
 import { KoaMiddlewareInterface, Middleware } from "routing-controllers";
 import { AppError, BadRequest } from "../errors/AppErrors";
@@ -9,15 +10,16 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
   skipAuth(ctx: Context): boolean {
     if (
       ctx.request.path &&
-      (ctx.request.path.indexOf("/v1/seat-management/api-docs") > -1 ||
-        ctx.request.path.indexOf("/v1/seat-management/health") > -1)
+      (ctx.request.path.indexOf("/api-docs") > -1 ||
+        ctx.request.path.indexOf("/health") > -1)
     ) {
       return true;
     }
     return false;
   }
 
-  async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {// eslint-disable-line @typescript-eslint/no-explicit-any
+  async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     try {
       const auth = ctx.request.headers["authorization"];
       const test = ctx.request.headers["test"];
@@ -36,7 +38,8 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
       } else {
         await this.checkToken(ctx, next, auth);
       }
-    } catch (err: any) {// eslint-disable-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       console.log(err);
       ctx.status = 500;
       ctx.body = ResponseHelper.getFailureResponse(
@@ -49,17 +52,14 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
     ctx: Context,
     next: (err?: any) => Promise<any>,
     token: string
-  ): Promise<any> {// eslint-disable-line @typescript-eslint/no-explicit-any
+  ): Promise<any> {
     try {
       const options = {
         headers: {
           Authorization: token,
         },
       };
-      const resp = await axios.get(
-        "http://localhost:3000/v1/idp/status",
-        options
-      );
+      const resp = await axios.get(config.get("clients.idp"), options);
       if (resp.data.profile) {
         ctx.query["userId"] = resp.data.profile.userId;
         ctx.query["name"] = resp.data.profile.name;
@@ -71,7 +71,8 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
           new AppError(resp.data.metadata.status, resp.data.metadata.message)
         );
       }
-    } catch (err: any) {// eslint-disable-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       console.log(err);
       if (err instanceof axios.AxiosError) {
         ctx.status = err.response?.status ?? 500;
