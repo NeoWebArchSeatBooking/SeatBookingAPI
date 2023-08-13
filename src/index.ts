@@ -1,3 +1,4 @@
+import config from "config";
 import { koaSwagger } from "koa2-swagger-ui";
 import { createKoaServer } from "routing-controllers";
 import { sbConnector } from "./helpers/DBProvider";
@@ -18,17 +19,17 @@ const cors = {
   allowMethods: ["GET", "POST", "DELETE", "PATCH", "OPTION"],
   allowHeaders: ["authorization", "content-type", "test"],
 };
-const port = process.env.APP_PORT || 4000;
+const port = process.env.APP_PORT || config.get("app.port");
 export const app = createKoaServer({
   cors,
-  routePrefix: "/v1/seat-management",
+  routePrefix: config.get("app.prefix"),
   controllers: [HealthRouter, InfraRouter, BookingRouter],
   middlewares: [AuthMiddleware],
 });
 
 app.use(
   koaSwagger({
-    routePrefix: "/v1/seat-management/api-docs",
+    routePrefix: config.get("app.docs"),
     swaggerOptions: { spec },
   })
 );
