@@ -17,8 +17,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
     return false;
   }
 
-  async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {// eslint-disable-line @typescript-eslint/no-explicit-any
     try {
       const auth = ctx.request.headers["authorization"];
       const test = ctx.request.headers["test"];
@@ -37,8 +36,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
       } else {
         await this.checkToken(ctx, next, auth);
       }
-    } catch (err: any) {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {// eslint-disable-line @typescript-eslint/no-explicit-any
       console.log(err);
       ctx.status = 500;
       ctx.body = ResponseHelper.getFailureResponse(
@@ -51,8 +49,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
     ctx: Context,
     next: (err?: any) => Promise<any>,
     token: string
-  ): Promise<any> {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  ): Promise<any> {// eslint-disable-line @typescript-eslint/no-explicit-any
     try {
       const options = {
         headers: {
@@ -74,8 +71,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
           new AppError(resp.data.metadata.status, resp.data.metadata.message)
         );
       }
-    } catch (err: any) {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {// eslint-disable-line @typescript-eslint/no-explicit-any
       console.log(err);
       if (err instanceof axios.AxiosError) {
         ctx.status = err.response?.status ?? 500;

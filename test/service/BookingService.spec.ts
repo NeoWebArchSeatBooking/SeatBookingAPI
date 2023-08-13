@@ -35,7 +35,7 @@ describe("Booking Service", () => {
     request.locationId = "L1";
     try {
       await bookingService.getAvailableSeats(request);
-    } catch (err: any) {
+    } catch (err: any) {// eslint-disable-line @typescript-eslint/no-explicit-any
       expect(err).toBeInstanceOf(NotFoundError);
       expect(err.message).toEqual("location");
     }
@@ -44,7 +44,7 @@ describe("Booking Service", () => {
     request.blockId = "B1";
     try {
       await bookingService.getAvailableSeats(request);
-    } catch (err: any) {
+    } catch (err: any) {// eslint-disable-line @typescript-eslint/no-explicit-any
       expect(err).toBeInstanceOf(NotFoundError);
       expect(err.message).toEqual("block");
     }
@@ -54,7 +54,7 @@ describe("Booking Service", () => {
     request.floorId = "1";
     try {
       await bookingService.getAvailableSeats(request);
-    } catch (err: any) {
+    } catch (err: any) {// eslint-disable-line @typescript-eslint/no-explicit-any
       expect(err).toBeInstanceOf(NotFoundError);
       expect(err.message).toEqual("floor");
     }
