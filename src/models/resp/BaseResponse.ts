@@ -2,6 +2,8 @@ import "reflect-metadata";
 export class Metadata {
   status: number;
   message: string;
+  limit?: number;
+  offset?: number;
 
   constructor(sts: number, msg: string) {
     this.message = msg;
@@ -10,5 +12,5 @@ export class Metadata {
 }
 
 export class BaseResponse {
-  metadata: Metadata;
+  _meta: Metadata;
 }

@@ -1,60 +1,84 @@
 import "reflect-metadata";
-import { BaseResponse } from "./BaseResponse";
 
-export class InfraRequest {
-  userId: string;
-  role: string;
+export const SeatArnmentType ={
+  RowSeat: 'ROW_SEAT',
+  MeetingHallSeat:'CONF_SEAT',
+  CabinSeat:'CABIN_SEAT',
+  CubicalSeat:'CUBICAL_SEAT'
 }
 
-export enum SeatType {
-  RowSeat,
-  MeetingHallSeat,
-  CabinSeat,
+export const SeatLocation = {
+  WindowFace:'WINDOW_FACE',
+  EntranceFace:'ENTRANCE_FACE',
+  Middle:'MIDDLE',
+  Unknown:'UNKNOWN',
 }
 
-export enum SeatLocation {
-  WindowFace,
-  EntranceFace,
-  Middle,
-  Unknown,
-}
-
-export class Seat {
-  seatId: number;
-  seatType: SeatType;
-  seatLocation: SeatLocation;
+export class SeatType {
+  seatId: string;
+  seatType: string;
+  seatLocation: string;
 }
 
 export class Wing {
   wingId: string;
   wingName: string;
   totalSeats: number;
-  seats: Seat[];
+  seats?: SeatType[];
 }
 
 export class Floor {
-  floorId: number;
-  wings: Wing[];
+  floorId: string;
+  status: string
 }
 
 export class Block {
   blockId: string;
   blockName: string;
   floorCount: number;
-  floors: Floor[];
+  floors?: Floor[];
 }
 
 export class Location {
   locationId: string;
   locationName: string;
-  blocks: Block[];
+  blocks?: Block[];
 }
 
-export class InfraResponse extends BaseResponse {
-  user: string;
-  locations: Location[];
-  constructor(usr: string) {
-    super();
-    this.user = usr;
-  }
+/*
+export class LocBlocks{
+  locationId: string
+  blocks: Block[]
 }
+
+export class BlockFloors{
+  blockId: string
+  floors: Floor[]
+}
+
+export class FloorWings{
+  floorId: string
+  wings: Wing[]
+}
+
+export class WingSeats{
+  wingId: string
+  seats: Seat[]
+}
+*/
+
+export class InfraPayload{
+  locationId: string;
+  locationName: string;
+  blocks?: Block[];
+}
+
+export class SeatPayload{
+  locationId: string;
+  blockId: string
+  floorId: string
+  seats: SeatType[]
+}
+
+
+
