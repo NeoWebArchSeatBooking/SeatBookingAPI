@@ -9,7 +9,7 @@ spec:
   selector:
     app: seatbooking-app
     name: seatbooking-pod
-  type: ClusterIp
+  type: ClusterIP
   ports:
     - protocol: TCP
       port: 80
