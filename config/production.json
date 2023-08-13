@@ -1,0 +1,10 @@
+{
+  "app": {
+    "prefix": "/v1/seat-management",
+    "port": "4000",
+    "docs": "/v1/seat-management/api-docs"
+  },
+  "clients": {
+    "idp": "http://idp-service/v1/idp/status"
+  }
+}
