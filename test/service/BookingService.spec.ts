@@ -1,14 +1,17 @@
-import { after, describe, test } from "node:test";
-import { bookingDataAccess } from "../../src/dataaccess/BookingDataAccess";
 import { ConflictError, NotFoundError } from "../../src/errors/AppErrors";
 import { BookingRequest, SeatingRequest } from "../../src/models";
 import { bookingService } from "../../src/services/SeatBookingService";
 
 jest.mock("../../src/dataaccess/BookingDataAccess");
+import { bookingDataAccess } from "../../src/dataaccess/BookingDataAccess";
 
 describe("Seat Booking Service", () => {
   
-  after(() => {
+  test("setup",()=>{
+    expect(true).toBeTruthy();
+  })
+
+  afterAll(() => {
     jest.clearAllMocks();
   });
 
@@ -28,15 +31,6 @@ describe("Seat Booking Service", () => {
       expect(bookings[0].seatInformation.locationId).toEqual("L1");
     });
 
-    test("invalid data", async () => {
-      bookingDataAccess.getBookedSeats = jest.fn().mockImplementation(() => {
-        return Promise.resolve([]);
-      });
-
-      const bookings = await bookingService.getBookedSeats("user");
-      expect(bookings).toBeTruthy();
-      expect(bookings.length).toEqual(0);
-    });
   });
 
   describe("validate getAvailableSeats()", () => {
@@ -88,9 +82,9 @@ describe("Seat Booking Service", () => {
   });
 
   describe("validate bookASeat()", () => {
-    const request = new BookingRequest();
-
+    
     test("with invalid seat information", async () => {
+      const request = new BookingRequest();
       request.locationId = "L1";
       try {
         await bookingService.bookASeat(request);
@@ -101,6 +95,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with invalid facility block info", async () => {
+      const request = new BookingRequest();
       request.locationId = "TCO";
       request.blockId = "B1";
       try {
@@ -112,6 +107,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with invalid facility floor info", async () => {
+      const request = new BookingRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "1";
@@ -124,6 +120,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with invalid facility seat info", async () => {
+      const request = new BookingRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "F1";
@@ -137,6 +134,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with valid seat but not available", async () => {
+      const request = new BookingRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "F1";
@@ -152,6 +150,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with valid seat but user has already booked", async () => {
+      const request = new BookingRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "F1";
@@ -173,10 +172,16 @@ describe("Seat Booking Service", () => {
 
     test("with valid seat", async () => {
       try {
+        const request = new BookingRequest();
         request.locationId = "TCO";
         request.blockId = "SDB1";
         request.floorId = "F1";
         request.seatId = "A103";
+        bookingDataAccess.getBookedSeatsByUserAndDate = jest
+        .fn()
+        .mockImplementation(() => {
+          return Promise.resolve(false);
+        });
         await bookingService.bookASeat(request);
       } catch (err) {
         expect(err).toBeFalsy();

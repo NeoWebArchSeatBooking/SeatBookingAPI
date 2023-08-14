@@ -2,7 +2,7 @@ import { BookingRequest, SeatingRequest } from "../../models";
 import { BookingModel } from "../../models/database/Booking";
 
 class BookingDataAccess {
-  public async getUserSeats(_userId: string): Promise<BookingModel[]> {
+  public async getBookedSeatsByUser(_userId: string): Promise<BookingModel[]> {
     return Promise.resolve([
       {
         id: 1,
@@ -29,7 +29,7 @@ class BookingDataAccess {
     ] as BookingModel[]);
   }
 
-  public async getBookedSeats(_req: SeatingRequest): Promise<string[]> {
+  public async getBookedSeatsByFacilities(_req: SeatingRequest): Promise<string[]> {
     return Promise.resolve(["A102", "A012"]);
   }
 

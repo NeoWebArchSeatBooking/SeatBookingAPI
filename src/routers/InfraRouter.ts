@@ -1,6 +1,6 @@
-import { Controller, Get, HeaderParam, QueryParams } from "routing-controllers";
+import { Controller, Get, HeaderParam } from "routing-controllers";
 import { ResponseHelper } from "../helpers";
-import { UserRequest, InfraResponse } from "../models";
+import { InfraResponse } from "../models";
 import { infraService} from "../services/InfraService"
 
 @Controller()

@@ -7,4 +7,6 @@ export class SeatingRequest extends UserRequest {
     date: string
     fromDate?: string
     toDate?: string
+    offset?: number
+    limit?: number
 }

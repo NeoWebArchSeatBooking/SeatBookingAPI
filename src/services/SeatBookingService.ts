@@ -14,13 +14,13 @@ import { BookingModel } from "../models/database/Booking";
 
 class SeatBookingService {
   public async getBookedSeats(user: string) {
-    const bookingSeats = await bookingDataAccess.getUserSeats(user);
+    const bookingSeats = await bookingDataAccess.getBookedSeatsByUser(user);
     return this.mapToBooking(bookingSeats);
   }
 
   public async getAvailableSeats(req: SeatingRequest): Promise<SeatInfo[]> {
     const seatInfos = await this.getInfraSeats(req);
-    const seats = await bookingDataAccess.getBookedSeats(req);
+    const seats = await bookingDataAccess.getBookedSeatsByFacilities(req);
     const updatedSeatInfos = seatInfos.seats.map((seat) => {
       const available = !seats.includes(seat.seatId);
       const seatInfo: SeatInfo = { available, ...seat };
@@ -52,7 +52,7 @@ class SeatBookingService {
       logger.info(`seat ${req.seatId} not valid`);
       throw new NotFoundError("seat");
     }
-    const seats = await bookingDataAccess.getBookedSeats(req);
+    const seats = await bookingDataAccess.getBookedSeatsByFacilities(req);
     if (seats.findIndex((seat) => seat === req.seatId) > -1) {
       logger.info(`seat ${req.seatId} not available to take`);
       throw new ConflictError("seat not available now, pick some other seat");

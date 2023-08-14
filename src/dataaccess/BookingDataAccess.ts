@@ -1,26 +1,43 @@
 import { AppError } from "../errors/AppErrors";
 import { AppHelper } from "../helpers";
-import { BookedSeat, Booking, BookingRequest, SeatingRequest } from "../models";
+import { BookingRequest, SeatingRequest } from "../models";
 import { BookingModel } from "../models/database/Booking";
 import { logger } from "../helpers/Logger"
+import { Op } from "sequelize";
 
 export class BookingDataAccess {
   
-  public async getUserSeats(userId: string): Promise<BookingModel[]> {
-    const bookings = await BookingModel.findAll({
-      where: { bookingUserId: userId },
+  public async getBookedSeatsByDate(fromDate: string, toDate: string,offset:number=0,limit:number=25): Promise<{bookings:BookingModel[],count:number}>{
+    const { rows,count } = await BookingModel.findAndCountAll({
+      where: { 
+        bookingDate: {
+          [Op.between]: [AppHelper.reformateDate(fromDate),AppHelper.reformateDate(toDate)]
+        }
+      },
+      offset,
+      limit
     });
-    return bookings;
+    const bookings = rows
+    return {bookings,count};
   }
 
-  public async getBookedSeats(req: SeatingRequest): Promise<string[]> {
+  public async getBookedSeatsByUser(userId: string,offset:number=0,limit:number=25): Promise<BookingModel[]> {
+    const { rows } = await BookingModel.findAndCountAll({
+      where: { bookingUserId: userId },
+      offset,
+      limit
+    });
+    return rows;
+  }
+
+  public async getBookedSeatsByFacilities(req: SeatingRequest): Promise<string[]> {
     const bookings = await BookingModel.findAll({
       where: {
         bookingLocId: req.locationId,
         bookingBlockId: req.blockId,
         bookingFloorId: req.floorId,
         bookingDate: AppHelper.reformateDate(req.date),
-      },
+      }
     });
     if (bookings.length > 0) {
       const seats = bookings.map((bookingDS) => {
