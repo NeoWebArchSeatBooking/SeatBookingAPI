@@ -1,22 +1,22 @@
 import axios from "axios";
 import config from "config";
 import { Context } from "koa";
+import { set } from "lodash";
 import { KoaMiddlewareInterface, Middleware } from "routing-controllers";
 import { AppError, BadRequest } from "../errors/AppErrors";
 import { ResponseHelper } from "../helpers";
-import { logger } from "../helpers/Logger"
-import { set } from "lodash"
+import { logger } from "../helpers/Logger";
 
 @Middleware({ type: "before" })
 export class AuthMiddleware implements KoaMiddlewareInterface {
   skipAuth(ctx: Context): boolean {
-    return ctx.request.path.indexOf("/api-docs") > -1     
+    return ctx.request.path.indexOf("/api-docs") > -1;
   }
 
-  setRequest(ctx:Context,data?:any){
-    set(ctx.request.query,"userId",data?.userId ?? "sgd.daran@gmail.com")
-    set(ctx.request.query,"name",data?.name ?? "DhamoSG");
-    set(ctx.request.query,"role",data?.role ?? "user");
+  setRequest(ctx: Context, data?: any) {
+    set(ctx.request.query, "userId", data?.userId ?? "sgd.daran@gmail.com");
+    set(ctx.request.query, "name", data?.name ?? "DhamoSG");
+    set(ctx.request.query, "role", data?.role ?? "user");
   }
 
   async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {
@@ -26,8 +26,8 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
       if (this.skipAuth(ctx)) {
         return next();
       } else if (test) {
-        logger.debug("mock request")
-        this.setRequest(ctx)
+        logger.debug("mock request");
+        this.setRequest(ctx);
         return next();
       } else if (!auth) {
         ctx.status = 400;
@@ -35,7 +35,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
           new BadRequest("bearer token missing")
         );
       } else {
-        logger.debug("request flows through IDP provider")
+        logger.debug("request flows through IDP provider");
         await this.checkToken(ctx, next, auth);
       }
     } catch (err: any) {
@@ -60,7 +60,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
       };
       const resp = await axios.get(config.get("clients.idp"), options);
       if (resp.data.profile) {
-        this.setRequest(ctx)
+        this.setRequest(ctx);
         return next();
       } else {
         ctx.status = resp.data.metadata.status;
