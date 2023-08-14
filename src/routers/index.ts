@@ -1,3 +1,2 @@
-export * from "./HealthRouter";
+export * from "./BookingRouter";
 export * from "./InfraRouter";
-export * from "./BookingRouter"
