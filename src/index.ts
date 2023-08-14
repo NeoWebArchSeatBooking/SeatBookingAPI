@@ -16,7 +16,7 @@ sbConnector.authenticate().catch((err) => {
 const cors = {
   origin: "*",
   maxAge: "600",
-  allowMethods: ["GET", "POST", "DELETE", "PATCH", "OPTION"],
+  allowMethods: "GET,POST,DELETE,PATCH,OPTION",
   allowHeaders: ["authorization", "content-type", "test"],
 };
 const port = process.env.APP_PORT || config.get("app.port");

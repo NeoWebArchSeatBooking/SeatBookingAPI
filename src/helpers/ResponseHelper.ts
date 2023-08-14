@@ -1,4 +1,4 @@
-import { AppError, NotFoundError } from "../errors/AppErrors";
+import { AppError, ConflictError, NotFoundError } from "../errors/AppErrors";
 import { BaseResponse, Metadata } from "../models";
 
 export class ResponseHelper {
@@ -8,16 +8,13 @@ export class ResponseHelper {
   }
 
   public static setFailureResponse(response: BaseResponse,err:AppError){
-    let metadata: Metadata = new Metadata(500, err.message)
-    if(err instanceof NotFoundError){
-      metadata = new Metadata(err.code, err.message);
-    }
+    let metadata: Metadata = new Metadata(err.code,err.message)
     response._meta = metadata;
   }
 
   public static getFailureResponse(error: AppError){
     const resp = new BaseResponse()
-    resp._meta  = new Metadata(error.code, error.message)
+    resp._meta  = new Metadata(error.code ?? 500 , error.message)
     return resp
   }
 }

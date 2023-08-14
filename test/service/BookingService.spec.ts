@@ -12,8 +12,8 @@ describe("Booking Service", () => {
     expect(bookings.length).toEqual(2);
     expect(bookings[0].bookingId).toEqual(1);
     expect(bookings[1].bookingId).toEqual(2);
-    expect(bookings[0].bookingDate).toEqual("12-08-2023");
-    expect(bookings[0].status).toEqual("active");
+    expect(bookings[0].bookingDate).toEqual("2023-08-12");
+    expect(bookings[0].status).toEqual("Active");
     expect(bookings[0].seatInformation.seatId).toEqual("A012");
     expect(bookings[0].seatInformation.blockId).toEqual("B1");
     expect(bookings[0].seatInformation.floorId).toEqual("F1");

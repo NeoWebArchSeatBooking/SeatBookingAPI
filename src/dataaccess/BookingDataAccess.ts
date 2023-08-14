@@ -1,30 +1,16 @@
+import { AppError } from "../errors/AppErrors";
 import { AppHelper } from "../helpers";
-import { BookedSeat, Booking, SeatingRequest } from "../models";
+import { BookedSeat, Booking, BookingRequest, SeatingRequest } from "../models";
 import { BookingModel } from "../models/database/Booking";
+import { logger } from "../helpers/Logger"
 
 export class BookingDataAccess {
-  private mapToBooking(models: BookingModel[]) {
-    return models.map((bookingDS) => {
-      const booking = new Booking();
-      booking.bookingDate = AppHelper.reformateDate(bookingDS.bookingDate);
-      booking.userId = bookingDS.bookingUserId;
-      booking.bookingId = bookingDS.id;
-      booking.status = bookingDS.bookingStatus === "A" ? "Active" : "Cancelled";
-      const seat = new BookedSeat();
-      seat.locationId = bookingDS.bookingLocId;
-      seat.blockId = bookingDS.bookingBlockId;
-      seat.floorId = bookingDS.bookingFloorId;
-      seat.seatId = bookingDS.bookingSeatId;
-      booking.seatInformation = seat;
-      return booking;
-    });
-  }
-
-  public async getUserSeats(userId: string): Promise<Booking[]> {
+  
+  public async getUserSeats(userId: string): Promise<BookingModel[]> {
     const bookings = await BookingModel.findAll({
       where: { bookingUserId: userId },
     });
-    return this.mapToBooking(bookings);
+    return bookings;
   }
 
   public async getBookedSeats(req: SeatingRequest): Promise<string[]> {
@@ -44,6 +30,37 @@ export class BookingDataAccess {
     }
     return [];
   }
+
+  public async updateSeat(req: BookingRequest): Promise<void> {
+    try{
+      const bookedSeat = await BookingModel.create({
+          bookingUserId: req.userId,
+          bookingStatus: 'A',
+          bookingSeatId: req.seatId,
+          bookingLocId: req.locationId,
+          bookingBlockId: req.blockId,
+          bookingFloorId: req.floorId,
+          bookingDate: AppHelper.reformateDate(req.date),   
+          bookingUpdateTime: Date.now().toString()   
+      });
+      logger.debug(bookedSeat)
+    }catch(err: any){
+      logger.error(err)
+      throw new AppError(500,err.message)
+    }
+  }
+
+  public async getBookedSeatsByUserAndDate(userId: string, date: string): Promise<boolean> {
+    const bookings = await BookingModel.findAll({
+      where: {
+        bookingUserId: userId,
+        bookingDate: AppHelper.reformateDate(date),
+        bookingStatus: 'A'
+      },
+    });
+    return bookings.length > 0
+  }
+
 }
 
 export const bookingDataAccess = new BookingDataAccess();

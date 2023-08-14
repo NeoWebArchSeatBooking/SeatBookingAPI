@@ -14,6 +14,12 @@ export class BadRequest extends AppError{
     }
 }
 
+export class ConflictError extends AppError{
+    constructor(message: string){
+        super(409, message)
+    }
+}
+
 export class AuthError extends AppError{
     constructor(message: string){
         super(403, message)
