@@ -4,21 +4,33 @@ import { ConflictError, NotFoundError } from "../errors/AppErrors";
 import { AppHelper } from "../helpers";
 import { logger } from "../helpers/Logger";
 import {
-  BookedSeat,
+  SeatInformation,
   Booking,
-  BookingRequest,
+  SeatBookRequest,
   SeatInfo,
-  SeatingRequest,
+  SeatSearchRequest,
+  SearchSearchInfo,
 } from "../models";
 import { BookingModel } from "../models/database/Booking";
+import { UserSeatRequest } from "../models/req/UserSeatsRequest";
 
 class SeatBookingService {
-  public async getBookedSeats(user: string) {
-    const bookingSeats = await bookingDataAccess.getBookedSeatsByUser(user);
-    return this.mapToBooking(bookingSeats);
+
+  public async getBookedSeats(userReq: UserSeatRequest): Promise<SearchSearchInfo> {
+    const searchInfo = new SearchSearchInfo()
+    if(userReq.role === 'admin' && userReq.view === 'admin'){
+      const {bookingSeats, count } = await bookingDataAccess.getBookedSeatsByDate(userReq.fromDate,userReq.toDate,userReq.offset,userReq.limit);
+      searchInfo.total = count
+      searchInfo.items = this.mapToBooking(bookingSeats);      
+    }else{
+      const {bookingSeats, count }  = await bookingDataAccess.getBookedSeatsByUser(userReq.userId,userReq.offset,userReq.limit);
+      searchInfo.total = count
+      searchInfo.items = this.mapToBooking(bookingSeats);       
+    }
+    return searchInfo
   }
 
-  public async getAvailableSeats(req: SeatingRequest): Promise<SeatInfo[]> {
+  public async getAvailableSeats(req: SeatSearchRequest): Promise<SeatInfo[]> {
     const seatInfos = await this.getInfraSeats(req);
     const seats = await bookingDataAccess.getBookedSeatsByFacilities(req);
     const updatedSeatInfos = seatInfos.seats.map((seat) => {
@@ -29,7 +41,7 @@ class SeatBookingService {
     return updatedSeatInfos;
   }
 
-  private async getInfraSeats(req: SeatingRequest) {
+  private async getInfraSeats(req: SeatSearchRequest) {
     const infras = await infraDataAccess.getInfra();
     const loc = infras.find((loc) => loc.locationId === req.locationId);
     if (loc === undefined) throw new NotFoundError("location");
@@ -46,7 +58,7 @@ class SeatBookingService {
     return seatInfos;
   }
 
-  public async bookASeat(req: BookingRequest): Promise<void> {
+  public async bookASeat(req: SeatBookRequest): Promise<void> {
     const seatInfo = await this.getInfraSeats(req);
     if (seatInfo.seats.findIndex((seat) => seat.seatId === req.seatId) === -1) {
       logger.info(`seat ${req.seatId} not valid`);
@@ -73,7 +85,7 @@ class SeatBookingService {
       booking.userId = bookingDS.bookingUserId;
       booking.bookingId = bookingDS.id;
       booking.status = bookingDS.bookingStatus === "A" ? "Active" : "Cancelled";
-      const seat = new BookedSeat();
+      const seat = new SeatInformation();
       seat.locationId = bookingDS.bookingLocId;
       seat.blockId = bookingDS.bookingBlockId;
       seat.floorId = bookingDS.bookingFloorId;

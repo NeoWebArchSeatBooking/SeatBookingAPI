@@ -16,7 +16,7 @@ sbConnector.authenticate().catch((err) => {
 const cors = {
   origin: "*",
   maxAge: "600",
-  allowMethods: "GET,POST,DELETE,PATCH,OPTION",
+  allowMethods: "*",
   allowHeaders: ["authorization", "content-type", "test"],
 };
 const port = process.env.APP_PORT || config.get("app.port");
@@ -25,6 +25,7 @@ export const app = createKoaServer({
   routePrefix: config.get("app.prefix"),
   controllers: [InfraRouter, BookingRouter],
   middlewares: [AuthMiddleware],
+  validation: false
 });
 
 app.use(

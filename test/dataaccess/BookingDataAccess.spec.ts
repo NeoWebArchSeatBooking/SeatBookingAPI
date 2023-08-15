@@ -1,5 +1,5 @@
 import {bookingDataAccess } from "../../src/dataaccess/BookingDataAccess"
-import { BookingRequest, SeatingRequest } from "../../src/models"
+import { SeatBookRequest, SeatSearchRequest } from "../../src/models"
 
 jest.mock("../../src/models/database/Booking")
 import {BookingModel} from "../../src/models/database/Booking"
@@ -22,9 +22,11 @@ describe("validate BookingDAO",()=>{
         })
         const resp = await bookingDataAccess.getBookedSeatsByUser("dummy")
         expect(resp).toBeTruthy()
-        expect(resp.length).toEqual(1)
-        expect(resp[0].bookingSeatId).toEqual("A102")
+        expect(resp.bookingSeats.length).toEqual(1)
+        expect(resp.bookingSeats[0].bookingSeatId).toEqual("A102")
     })
+
+    
 
     test("validate getBookedSeats()",async ()=>{
         BookingModel.findAll = jest.fn().mockImplementation(()=>{
@@ -61,7 +63,7 @@ describe("validate BookingDAO",()=>{
                 bookingUpdateTime: "",
               }])
         })
-        const resp = await bookingDataAccess.getBookedSeatsByFacilities(new SeatingRequest())
+        const resp = await bookingDataAccess.getBookedSeatsByFacilities(new SeatSearchRequest())
         expect(resp).toBeTruthy()
         expect(resp.length).toEqual(3)
         expect(resp[0]).toEqual("A102")
@@ -71,7 +73,7 @@ describe("validate BookingDAO",()=>{
         BookingModel.findAll = jest.fn().mockImplementation(()=>{
             return Promise.resolve([])
         })
-        const resp = await bookingDataAccess.getBookedSeatsByFacilities(new SeatingRequest())
+        const resp = await bookingDataAccess.getBookedSeatsByFacilities(new SeatSearchRequest())
         expect(resp).toBeTruthy()
         expect(resp.length).toEqual(0)
     })
@@ -128,7 +130,7 @@ describe("validate BookingDAO",()=>{
             BookingModel.create = jest.fn().mockImplementation(()=>{
                 return Promise.resolve({})
             })
-            await bookingDataAccess.updateSeat(new BookingRequest())
+            await bookingDataAccess.updateSeat(new SeatBookRequest())
         }catch(err){
             expect(err).toBeFalsy()
         }
@@ -139,7 +141,7 @@ describe("validate BookingDAO",()=>{
             BookingModel.create = jest.fn().mockImplementation(()=>{
                 return Promise.reject({})
             })
-            await bookingDataAccess.updateSeat(new BookingRequest())
+            await bookingDataAccess.updateSeat(new SeatBookRequest())
         }catch(err){
             expect(err).toBeTruthy
         }

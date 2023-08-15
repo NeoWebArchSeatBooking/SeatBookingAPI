@@ -1,13 +1,13 @@
 import { AppError } from "../errors/AppErrors";
 import { AppHelper } from "../helpers";
-import { BookingRequest, SeatingRequest } from "../models";
+import { SeatBookRequest, SeatSearchRequest } from "../models";
 import { BookingModel } from "../models/database/Booking";
 import { logger } from "../helpers/Logger"
 import { Op } from "sequelize";
 
 export class BookingDataAccess {
   
-  public async getBookedSeatsByDate(fromDate: string, toDate: string,offset:number=0,limit:number=25): Promise<{bookings:BookingModel[],count:number}>{
+  public async getBookedSeatsByDate(fromDate: string, toDate: string,offset:number=0,limit:number=25): Promise<{bookingSeats:BookingModel[],count:number}>{
     const { rows,count } = await BookingModel.findAndCountAll({
       where: { 
         bookingDate: {
@@ -17,20 +17,21 @@ export class BookingDataAccess {
       offset,
       limit
     });
-    const bookings = rows
-    return {bookings,count};
+    const bookingSeats = rows
+    return {bookingSeats,count};
   }
 
-  public async getBookedSeatsByUser(userId: string,offset:number=0,limit:number=25): Promise<BookingModel[]> {
-    const { rows } = await BookingModel.findAndCountAll({
+  public async getBookedSeatsByUser(userId: string,offset:number=0,limit:number=25): Promise<{bookingSeats:BookingModel[],count:number}> {
+    const { rows,count } = await BookingModel.findAndCountAll({
       where: { bookingUserId: userId },
       offset,
       limit
     });
-    return rows;
+    const bookingSeats = rows
+    return {bookingSeats,count};
   }
 
-  public async getBookedSeatsByFacilities(req: SeatingRequest): Promise<string[]> {
+  public async getBookedSeatsByFacilities(req: SeatSearchRequest): Promise<string[]> {
     const bookings = await BookingModel.findAll({
       where: {
         bookingLocId: req.locationId,
@@ -48,7 +49,7 @@ export class BookingDataAccess {
     return [];
   }
 
-  public async updateSeat(req: BookingRequest): Promise<void> {
+  public async updateSeat(req: SeatBookRequest): Promise<void> {
     try{
       const bookedSeat = await BookingModel.create({
           bookingUserId: req.userId,

@@ -31,3 +31,10 @@ export class NotFoundError extends AppError {
     super(404, `${key} not found`);
   }
 }
+
+
+export class ValidationErr extends AppError{
+  constructor(key: string) {
+    super(406, `validation failures: ${key}`);
+  }
+}

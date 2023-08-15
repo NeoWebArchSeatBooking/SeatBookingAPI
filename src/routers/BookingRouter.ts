@@ -7,26 +7,30 @@ import {
   QueryParams,
 } from "routing-controllers";
 import { AppError } from "../errors/AppErrors";
-import { ResponseHelper } from "../helpers";
+import { ResponseHelper,Validator } from "../helpers";
 import {
   BaseResponse,
-  BookingRequest,
-  BookingResponse,
-  SeatingRequest,
+  SeatBookRequest,
+  BookedSeatResponse,
+  SeatSearchRequest,
 } from "../models";
 import { SeatingResponse } from "../models/resp/SeatingResponse";
 import { bookingService } from "../services/SeatBookingService";
+import { UserSeatRequest } from "../models/req/UserSeatsRequest";
 
 @Controller()
 export class BookingRouter {
   @Get("/seats")
   public async getBookingInfo(
-    @QueryParam("userId") userId: string
-  ): Promise<BookingResponse> {
-    const response = new BookingResponse();
+    @QueryParams() userSeatRequest: UserSeatRequest
+  ): Promise<BookedSeatResponse> {
+    const response = new BookedSeatResponse();
     try {
-      response.items = await bookingService.getBookedSeats(userId);
-      ResponseHelper.setSuccessResponse(response);
+      await Validator.validateUserSeatRequest(userSeatRequest)
+      const {items,total} = await bookingService.getBookedSeats(userSeatRequest);
+      ResponseHelper.setSuccessResponse(response,userSeatRequest);
+      response.items = items
+      response._meta.total = total
     } catch (err) {
       ResponseHelper.setFailureResponse(response, err as AppError);
     }
@@ -37,7 +41,7 @@ export class BookingRouter {
   public async getAvailableSeat(
     @QueryParam("userId") userId: string,
     @QueryParam("role") role: string,
-    @QueryParams() req: SeatingRequest
+    @QueryParams() req: SeatSearchRequest
   ): Promise<SeatingResponse> {
     req.userId = userId;
     req.role = role;
@@ -51,11 +55,11 @@ export class BookingRouter {
     return response;
   }
 
-  @Post("/facilities/seats")
+  @Post("/seats")
   public async reserveSeat(
     @QueryParam("userId") userId: string,
     @QueryParam("role") role: string,
-    @Body() req: BookingRequest
+    @Body() req: SeatBookRequest
   ): Promise<BaseResponse> {
     req.userId = userId;
     req.role = role;

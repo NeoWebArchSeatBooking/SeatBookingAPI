@@ -1,6 +1,7 @@
 import { ConflictError, NotFoundError } from "../../src/errors/AppErrors";
-import { BookingRequest, SeatingRequest } from "../../src/models";
+import { SeatBookRequest, SeatSearchRequest } from "../../src/models";
 import { bookingService } from "../../src/services/SeatBookingService";
+import { UserSeatRequest } from "../../src/models/req/UserSeatsRequest";
 
 jest.mock("../../src/dataaccess/BookingDataAccess");
 import { bookingDataAccess } from "../../src/dataaccess/BookingDataAccess";
@@ -18,24 +19,25 @@ describe("Seat Booking Service", () => {
   describe("validate getBookedSeats()", () => {
     test("with valid data", async () => {
       
-      const bookings = await bookingService.getBookedSeats("user");
+      const bookings = await bookingService.getBookedSeats(new UserSeatRequest());
       expect(bookings).toBeTruthy();
-      expect(bookings.length).toEqual(2);
-      expect(bookings[0].bookingId).toEqual(1);
-      expect(bookings[1].bookingId).toEqual(2);
-      expect(bookings[0].bookingDate).toEqual("2023-08-12");
-      expect(bookings[0].status).toEqual("Active");
-      expect(bookings[0].seatInformation.seatId).toEqual("A012");
-      expect(bookings[0].seatInformation.blockId).toEqual("B1");
-      expect(bookings[0].seatInformation.floorId).toEqual("F1");
-      expect(bookings[0].seatInformation.locationId).toEqual("L1");
+      expect(bookings.items).toBeTruthy();
+      expect(bookings.items.length).toEqual(2);
+      expect(bookings.items[0].bookingId).toEqual(1);
+      expect(bookings.items[1].bookingId).toEqual(2);
+      expect(bookings.items[0].bookingDate).toEqual("2023-08-12");
+      expect(bookings.items[0].status).toEqual("Active");
+      expect(bookings.items[0].seatInformation.seatId).toEqual("A012");
+      expect(bookings.items[0].seatInformation.blockId).toEqual("B1");
+      expect(bookings.items[0].seatInformation.floorId).toEqual("F1");
+      expect(bookings.items[0].seatInformation.locationId).toEqual("L1");
     });
 
   });
 
   describe("validate getAvailableSeats()", () => {
     test("with invalid facility location info", async () => {
-      const request = new SeatingRequest();
+      const request = new SeatSearchRequest();
       request.locationId = "L1";
       try {
         await bookingService.getAvailableSeats(request);
@@ -46,7 +48,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with invalid facility block info", async () => {
-      const request = new SeatingRequest();
+      const request = new SeatSearchRequest();
       request.locationId = "TCO";
       request.blockId = "B1";
       try {
@@ -58,7 +60,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with invalid facility floor info", async () => {
-      const request = new SeatingRequest();
+      const request = new SeatSearchRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "1";
@@ -71,7 +73,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with valid faciltiy info", async () => {
-      const request = new SeatingRequest();
+      const request = new SeatSearchRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "F1";
@@ -84,7 +86,7 @@ describe("Seat Booking Service", () => {
   describe("validate bookASeat()", () => {
     
     test("with invalid seat information", async () => {
-      const request = new BookingRequest();
+      const request = new SeatBookRequest();
       request.locationId = "L1";
       try {
         await bookingService.bookASeat(request);
@@ -95,7 +97,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with invalid facility block info", async () => {
-      const request = new BookingRequest();
+      const request = new SeatBookRequest();
       request.locationId = "TCO";
       request.blockId = "B1";
       try {
@@ -107,7 +109,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with invalid facility floor info", async () => {
-      const request = new BookingRequest();
+      const request = new SeatBookRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "1";
@@ -120,7 +122,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with invalid facility seat info", async () => {
-      const request = new BookingRequest();
+      const request = new SeatBookRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "F1";
@@ -134,7 +136,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with valid seat but not available", async () => {
-      const request = new BookingRequest();
+      const request = new SeatBookRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "F1";
@@ -150,7 +152,7 @@ describe("Seat Booking Service", () => {
     });
 
     test("with valid seat but user has already booked", async () => {
-      const request = new BookingRequest();
+      const request = new SeatBookRequest();
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "F1";
@@ -172,7 +174,7 @@ describe("Seat Booking Service", () => {
 
     test("with valid seat", async () => {
       try {
-        const request = new BookingRequest();
+        const request = new SeatBookRequest();
         request.locationId = "TCO";
         request.blockId = "SDB1";
         request.floorId = "F1";
