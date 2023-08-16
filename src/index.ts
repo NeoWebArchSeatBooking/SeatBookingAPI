@@ -17,7 +17,7 @@ const cors = {
   origin: "*",
   maxAge: "600",
   allowMethods: "*",
-  allowHeaders: ["authorization", "content-type", "test"],
+  allowHeaders: "*",
 };
 const port = process.env.APP_PORT || config.get("app.port");
 export const app = createKoaServer({
