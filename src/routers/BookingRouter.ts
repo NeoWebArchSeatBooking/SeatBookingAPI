@@ -1,33 +1,74 @@
-import { Controller, Get, QueryParams } from "routing-controllers";
-import { ResponseHelper } from "../helpers";
-import { UserRequest, BookingResponse, SeatingRequest } from "../models";
-import { bookingService } from "../services/BookingService"
-import { SeatingResponse } from "../models/resp/SeatingResponse";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  QueryParam,
+  QueryParams,
+} from "routing-controllers";
 import { AppError } from "../errors/AppErrors";
+import { ResponseHelper,Validator } from "../helpers";
+import {
+  BaseResponse,
+  SeatBookRequest,
+  BookedSeatResponse,
+  SeatSearchRequest,
+} from "../models";
+import { SeatingResponse } from "../models/resp/SeatingResponse";
+import { bookingService } from "../services/SeatBookingService";
+import { UserSeatRequest } from "../models/req/UserSeatsRequest";
 
 @Controller()
 export class BookingRouter {
-
   @Get("/seats")
   public async getBookingInfo(
-    @QueryParams() req: UserRequest
-  ): Promise<BookingResponse> {
-    const response = new BookingResponse();
-    response.items = await bookingService.getBookingInfo(req.userId);
-    ResponseHelper.setSuccessResponse(response);
+    @QueryParams() userSeatRequest: UserSeatRequest
+  ): Promise<BookedSeatResponse> {
+    const response = new BookedSeatResponse();
+    try {
+      await Validator.validateUserSeatRequest(userSeatRequest)
+      const {items,total} = await bookingService.getBookedSeats(userSeatRequest);
+      ResponseHelper.setSuccessResponse(response,userSeatRequest);
+      response.items = items
+      response._meta.total = total
+    } catch (err) {
+      ResponseHelper.setFailureResponse(response, err as AppError);
+    }
     return response;
   }
 
   @Get("/facilities/seats")
   public async getAvailableSeat(
-    @QueryParams() req: SeatingRequest
+    @QueryParam("userId") userId: string,
+    @QueryParam("role") role: string,
+    @QueryParams() req: SeatSearchRequest
   ): Promise<SeatingResponse> {
+    req.userId = userId;
+    req.role = role;
     const response = new SeatingResponse();
     try {
       response.seats = await bookingService.getAvailableSeats(req);
       ResponseHelper.setSuccessResponse(response);
     } catch (err) {
-      ResponseHelper.setFailureResponse(response,err as AppError);
+      ResponseHelper.setFailureResponse(response, err as AppError);
+    }
+    return response;
+  }
+
+  @Post("/seats")
+  public async reserveSeat(
+    @QueryParam("userId") userId: string,
+    @QueryParam("role") role: string,
+    @Body() req: SeatBookRequest
+  ): Promise<BaseResponse> {
+    req.userId = userId;
+    req.role = role;
+    const response = new BaseResponse();
+    try {
+      await bookingService.bookASeat(req);
+      ResponseHelper.setSuccessResponse(response);
+    } catch (err) {
+      ResponseHelper.setFailureResponse(response, err as AppError);
     }
     return response;
   }

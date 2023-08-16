@@ -5,15 +5,22 @@ export class Booking{
     userId: string
     bookingDate: string
     status: string
-    seatInformation: BookedSeat
+    seatInformation: SeatInformation
 }
 
-export class BookedSeat{
+
+export class SeatInformation{
     locationId: string
     blockId: string
     floorId: string
     seatId: string
 }
+
+export class SearchSearchInfo{
+    items: Booking[]
+    total: number
+}
+
 
 export class SeatInfo extends SeatType{
     available: boolean

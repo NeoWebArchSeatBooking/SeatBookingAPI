@@ -6,5 +6,10 @@
   },
   "clients": {
     "idp": "http://idp-service/v1/idp/status"
+  },
+  "logger": {
+    "name": "SeatBookingAPI",
+    "level": "info",
+    "output": "/app.log"
   }
 }

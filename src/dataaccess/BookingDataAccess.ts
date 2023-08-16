@@ -1,40 +1,44 @@
+import { AppError } from "../errors/AppErrors";
 import { AppHelper } from "../helpers";
-import { BookedSeat, Booking, SeatingRequest } from "../models";
+import { SeatBookRequest, SeatSearchRequest } from "../models";
 import { BookingModel } from "../models/database/Booking";
+import { logger } from "../helpers/Logger"
+import { Op } from "sequelize";
 
 export class BookingDataAccess {
-  private mapToBooking(models: BookingModel[]) {
-    return models.map((bookingDS) => {
-      const booking = new Booking();
-      booking.bookingDate = AppHelper.reformateDate(bookingDS.bookingDate);
-      booking.userId = bookingDS.bookingUserId;
-      booking.bookingId = bookingDS.id;
-      booking.status = bookingDS.bookingStatus === "A" ? "Active" : "Cancelled";
-      const seat = new BookedSeat();
-      seat.locationId = bookingDS.bookingLocId;
-      seat.blockId = bookingDS.bookingBlockId;
-      seat.floorId = bookingDS.bookingFloorId;
-      seat.seatId = bookingDS.bookingSeatId;
-      booking.seatInformation = seat;
-      return booking;
+  
+  public async getBookedSeatsByDate(fromDate: string, toDate: string,offset:number=0,limit:number=25): Promise<{bookingSeats:BookingModel[],count:number}>{
+    const { rows,count } = await BookingModel.findAndCountAll({
+      where: { 
+        bookingDate: {
+          [Op.between]: [AppHelper.reformateDate(fromDate),AppHelper.reformateDate(toDate)]
+        }
+      },
+      offset,
+      limit
     });
+    const bookingSeats = rows
+    return {bookingSeats,count};
   }
 
-  public async getUserSeats(userId: string): Promise<Booking[]> {
-    const bookings = await BookingModel.findAll({
+  public async getBookedSeatsByUser(userId: string,offset:number=0,limit:number=25): Promise<{bookingSeats:BookingModel[],count:number}> {
+    const { rows,count } = await BookingModel.findAndCountAll({
       where: { bookingUserId: userId },
+      offset,
+      limit
     });
-    return this.mapToBooking(bookings);
+    const bookingSeats = rows
+    return {bookingSeats,count};
   }
 
-  public async getBookedSeats(req: SeatingRequest): Promise<string[]> {
+  public async getBookedSeatsByFacilities(req: SeatSearchRequest): Promise<string[]> {
     const bookings = await BookingModel.findAll({
       where: {
         bookingLocId: req.locationId,
         bookingBlockId: req.blockId,
         bookingFloorId: req.floorId,
         bookingDate: AppHelper.reformateDate(req.date),
-      },
+      }
     });
     if (bookings.length > 0) {
       const seats = bookings.map((bookingDS) => {
@@ -44,6 +48,37 @@ export class BookingDataAccess {
     }
     return [];
   }
+
+  public async updateSeat(req: SeatBookRequest): Promise<void> {
+    try{
+      const bookedSeat = await BookingModel.create({
+          bookingUserId: req.userId,
+          bookingStatus: 'A',
+          bookingSeatId: req.seatId,
+          bookingLocId: req.locationId,
+          bookingBlockId: req.blockId,
+          bookingFloorId: req.floorId,
+          bookingDate: AppHelper.reformateDate(req.date),   
+          bookingUpdateTime: Date.now().toString()   
+      });
+      logger.debug(bookedSeat)
+    }catch(err: any){
+      logger.error(err)
+      throw new AppError(500,err.message)
+    }
+  }
+
+  public async getBookedSeatsByUserAndDate(userId: string, date: string): Promise<boolean> {
+    const bookings = await BookingModel.findAll({
+      where: {
+        bookingUserId: userId,
+        bookingDate: AppHelper.reformateDate(date),
+        bookingStatus: 'A'
+      },
+    });
+    return bookings.length > 0
+  }
+
 }
 
 export const bookingDataAccess = new BookingDataAccess();
