@@ -1,34 +1,33 @@
 import axios from "axios";
 import config from "config";
 import { Context } from "koa";
+import { set } from "lodash";
 import { KoaMiddlewareInterface, Middleware } from "routing-controllers";
 import { AppError, BadRequest } from "../errors/AppErrors";
 import { ResponseHelper } from "../helpers";
+import { logger } from "../helpers/Logger";
 
 @Middleware({ type: "before" })
 export class AuthMiddleware implements KoaMiddlewareInterface {
   skipAuth(ctx: Context): boolean {
-    if (
-      ctx.request.path &&
-      (ctx.request.path.indexOf("/api-docs") > -1 ||
-        ctx.request.path.indexOf("/health") > -1)
-    ) {
-      return true;
-    }
-    return false;
+    return ctx.request.path.indexOf("/api-docs") > -1;
+  }
+
+  setRequest(ctx: Context, data?: any) {
+    set(ctx.request.query, "userId", data?.userId ?? "sgd.daran@gmail.com");
+    set(ctx.request.query, "name", data?.name ?? "DhamoSG");
+    set(ctx.request.query, "role", data?.role ?? "admin");
   }
 
   async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     try {
       const auth = ctx.request.headers["authorization"];
       const test = ctx.request.headers["test"];
       if (this.skipAuth(ctx)) {
         return next();
       } else if (test) {
-        ctx.query["userId"] = "sgd.daran@gmail.com";
-        ctx.query["name"] = "DhamoSG";
-        ctx.query["role"] = "user";
+        logger.debug("mock request");
+        this.setRequest(ctx);
         return next();
       } else if (!auth) {
         ctx.status = 400;
@@ -36,11 +35,11 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
           new BadRequest("bearer token missing")
         );
       } else {
+        logger.debug("request flows through IDP provider");
         await this.checkToken(ctx, next, auth);
       }
     } catch (err: any) {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
-      console.log(err);
+      logger.error(err);
       ctx.status = 500;
       ctx.body = ResponseHelper.getFailureResponse(
         new AppError(500, err.message)
@@ -61,9 +60,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
       };
       const resp = await axios.get(config.get("clients.idp"), options);
       if (resp.data.profile) {
-        ctx.query["userId"] = resp.data.profile.userId;
-        ctx.query["name"] = resp.data.profile.name;
-        ctx.query["role"] = resp.data.profile.role;
+        this.setRequest(ctx);
         return next();
       } else {
         ctx.status = resp.data.metadata.status;
@@ -72,8 +69,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
         );
       }
     } catch (err: any) {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
-      console.log(err);
+      logger.error(err);
       if (err instanceof axios.AxiosError) {
         ctx.status = err.response?.status ?? 500;
         ctx.body = ResponseHelper.getFailureResponse(

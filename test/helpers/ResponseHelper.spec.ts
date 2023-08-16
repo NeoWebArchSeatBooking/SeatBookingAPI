@@ -1,9 +1,11 @@
 import {
   AuthError,
   BadRequest,
+  ConflictError,
   NotFoundError,
 } from "../../src/errors/AppErrors";
 import { ResponseHelper } from "../../src/helpers/ResponseHelper";
+import { BaseResponse } from "../../src/models";
 
 describe("Validate ResponseHelper", () => {
   describe("getFailureResponse()", () => {
@@ -32,6 +34,26 @@ describe("Validate ResponseHelper", () => {
       expect(output).toBeTruthy();
       expect(output._meta).toBeTruthy();
       expect(output._meta.status).toEqual(404);
+    });
+  });
+  describe("setFailureResponse()", () => {
+    test("validate failure response", () => {
+      const resp = new BaseResponse()
+      ResponseHelper.setFailureResponse(
+        resp, new ConflictError('seat')
+      );
+      expect(resp._meta).toBeTruthy();
+      expect(resp._meta.status).toEqual(409);
+    });
+  });
+  describe("setSuccessResponse()", () => {
+    test("validate success response", () => {
+      const resp = new BaseResponse()
+      ResponseHelper.setSuccessResponse(
+        resp
+      );
+      expect(resp._meta).toBeTruthy();
+      expect(resp._meta.status).toEqual(200);
     });
   });
 });

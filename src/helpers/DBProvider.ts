@@ -8,6 +8,7 @@ class DBHelper{
   public static getSBDBConn(){
     if(! this.sequelizeConn){
       this.sequelizeConn = new Sequelize(BookingDB.getBooking_DBURL(),{
+        logging:false,
         pool: {
         max: 5,
         min: 0,
