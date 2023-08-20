@@ -6,6 +6,7 @@ import { KoaMiddlewareInterface, Middleware } from "routing-controllers";
 import { AppError, BadRequest } from "../errors/AppErrors";
 import { ResponseHelper } from "../helpers";
 import { logger } from "../helpers/Logger";
+import { BaseResponse } from "../models";
 
 @Middleware({ type: "before" })
 export class AuthMiddleware implements KoaMiddlewareInterface {
@@ -16,7 +17,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
   setRequest(ctx: Context, data?: any) {
     set(ctx.request.query, "userId", data?.userId ?? "sgd.daran@gmail.com");
     set(ctx.request.query, "name", data?.name ?? "DhamoSG");
-    set(ctx.request.query, "role", data?.role ?? "admin");
+    set(ctx.request.query, "role", data?.role ?? "user");
   }
 
   async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {
@@ -24,11 +25,12 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
       const auth = ctx.request.headers["authorization"];
       const test = ctx.request.headers["test"];
       if (this.skipAuth(ctx)) {
-        return next();
+        await next();
       } else if (test) {
         logger.debug("mock request");
         this.setRequest(ctx);
-        return next();
+        await next();
+        this.setStatus(ctx)
       } else if (!auth) {
         ctx.status = 400;
         ctx.body = ResponseHelper.getFailureResponse(
@@ -47,6 +49,13 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
     }
   }
 
+  private async setStatus(ctx: Context){
+    if(ctx.body && ctx.body instanceof BaseResponse){
+      logger.info("setting http status code as response status");
+      ctx.status = (ctx.body as BaseResponse)._meta.status
+    }
+  }
+
   private async checkToken(
     ctx: Context,
     next: (err?: any) => Promise<any>,
@@ -61,7 +70,8 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
       const resp = await axios.get(config.get("clients.idp"), options);
       if (resp.data.profile) {
         this.setRequest(ctx);
-        return next();
+        await next();
+        this.setStatus(ctx)
       } else {
         ctx.status = resp.data.metadata.status;
         ctx.body = ResponseHelper.getFailureResponse(

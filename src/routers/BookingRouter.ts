@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   QueryParam,
   QueryParams,
@@ -11,15 +12,14 @@ import { ResponseHelper,Validator } from "../helpers";
 import {
   BaseResponse,
   SeatBookRequest,
-  BookedSeatResponse,
-  SeatSearchRequest,
+  BookedSeatResponse
 } from "../models";
-import { SeatingResponse } from "../models/resp/SeatingResponse";
 import { bookingService } from "../services/SeatBookingService";
 import { UserSeatRequest } from "../models/req/UserSeatsRequest";
 
-@Controller()
+@Controller("/users")
 export class BookingRouter {
+  
   @Get("/seats")
   public async getBookingInfo(
     @QueryParams() userSeatRequest: UserSeatRequest
@@ -37,18 +37,17 @@ export class BookingRouter {
     return response;
   }
 
-  @Get("/facilities/seats")
-  public async getAvailableSeat(
-    @QueryParam("userId") userId: string,
-    @QueryParam("role") role: string,
-    @QueryParams() req: SeatSearchRequest
-  ): Promise<SeatingResponse> {
-    req.userId = userId;
-    req.role = role;
-    const response = new SeatingResponse();
+  @Patch("/seats")
+  public async cancelBookingInfo(
+    @QueryParams() userSeatRequest: UserSeatRequest
+  ): Promise<BookedSeatResponse> {
+    const response = new BookedSeatResponse();
     try {
-      response.seats = await bookingService.getAvailableSeats(req);
-      ResponseHelper.setSuccessResponse(response);
+      await Validator.validateUserSeatRequest(userSeatRequest)
+      const {items,total} = await bookingService.getBookedSeats(userSeatRequest);
+      ResponseHelper.setSuccessResponse(response,userSeatRequest);
+      response.items = items
+      response._meta.total = total
     } catch (err) {
       ResponseHelper.setFailureResponse(response, err as AppError);
     }

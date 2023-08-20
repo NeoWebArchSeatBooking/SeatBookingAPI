@@ -1,6 +1,6 @@
 {
   "app": {
-    "prefix": "/v1/seat-management",
+    "prefix": "/v1",
     "port": "4000",
     "docs": "/v1/seat-management/api-docs"
   },
