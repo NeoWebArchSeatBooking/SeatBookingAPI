@@ -57,3 +57,18 @@ spec:
               value: 192.168.65.2
             - name: NODE_ENV
               value: production
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sbasecrets
+                  key: sba_db_user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sbasecrets
+                  key: sba_db_password
+            - name: DB_SCHEME
+              valueFrom:
+                secretKeyRef:
+                  name: sbasecrets
+                  key: sba_db_schema             
