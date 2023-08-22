@@ -9,10 +9,9 @@ spec:
   selector:
     app: seatbooking-app
     name: seatbooking-pod
-  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 4000
 ---
 apiVersion: apps/v1
