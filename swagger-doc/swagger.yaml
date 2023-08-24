@@ -4,19 +4,23 @@ info:
   description: Seat Booking API allows google users to book a seat from a given location's facility for working.
   version: 1.0.0
 servers:
-- url: http://localhost:4000/v1/seat-management
+- url: http://localhost:4000/v1/
+tags:
+  - name: facilities
+    description: All facility operations
+  - name: preference
+    description: User preferences
+  - name: booking
+    description: All seat booking operations
 paths:
   /facilities:
     get:
+      tags:
+      - facilities
+      security:
+      - bearerAuth: []
       summary: list of available location and facility
       description: returns the list of available location and facility
-      parameters:
-      - name: Authorization
-        in: header
-        description: Bearer token
-        required: true
-        schema:
-          type: string
       responses:
         200:
           description: successful operation
@@ -25,102 +29,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/InfraResponse'
         400:
-          description: Bad Request, pass valid bearer token in authroization
+          description: Bad Request, pass bearer token in authroization header
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 400
+                  message: bad request
+        401:
+          description: Unauthorized Request, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 401
+                  message: unauthorized
         500:
           description: System failed to respond
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvalidResponse'
-  /seats:
-    get:
-      summary: fetch user's booking details
-      description: fetch user's booking details if user role is user otherwise fetch all user's booking details for given date
-      parameters:
-      - name: Authorization
-        in: header
-        description: Bearer token
-        required: true
-        schema:
-          type: string
-      - name: viewRole
-        in: query
-        description: default user, valid values are user,admin
-        required: false
-        schema:
-          type: string
-      - name: date
-        in: query
-        description: required only if viewRole is admin and user is admin, dd-mm-yyyy format
-        required: false
-        schema:
-          type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BookingResponse'
-        400:
-          description: Bad Request, pass valid bearer token in authroization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvalidResponse'
-        500:
-          description: System failed to respond
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvalidResponse'
-    post:
-      summary: book a seat 
-      description: book a seat on specific date 
-      requestBody:
-        description: booking information
-        $ref: '#/components/requestBodies/BookingRequest'
-      parameters:
-      - name: Authorization
-        in: header
-        description: Bearer token
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BookingResponse'
-        400:
-          description: Bad Request, pass valid bearer token in authroization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvalidResponse'
-        500:
-          description: System failed to respond
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 500
+                  message: internal servic error
   /facilities/seats:
     get:
+      tags:
+      - facilities
+      security:
+      - bearerAuth: []
       summary: fetch available seats to book
       description: fetch available seats for the given inputs such as location, block, floor and date
       parameters:
-      - name: Authorization
-        in: header
-        description: Bearer token
-        required: true
-        schema:
-          type: string
       - name: date
         in: query
         description: dd-mm-yyyy format
@@ -142,9 +88,15 @@ paths:
       - name: floorId
         in: query
         description: specific floor 
-        required: true
+        required: false
         schema:
           type: string
+      - name: availability
+        in: query
+        description: returns available seats if true or unavailable seats if false.
+        required: false
+        schema:
+          type: string 
       responses:
         200:
           description: successful operation
@@ -158,12 +110,237 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 400
+                  message: bad request
+        401:
+          description: Unauthorized Request, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 401
+                  message: unauthorized
+        404:
+          description: given query parameter not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 404
+                  message: locationId not found
         500:
           description: System failed to respond
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 500
+                  message: internal server error
+  /booking/seats:
+    get:
+      tags:
+      - booking
+      security:
+      - bearerAuth: []
+      summary: fetch user's booking details
+      description: fetch user's booking details if user role is user otherwise fetch all user's booking details for given date
+      parameters:
+      - name: view
+        in: query
+        example: admin
+        description: default user, valid values are user & admin
+        required: false
+        schema:
+          type: string
+      - name: date
+        in: query
+        example: 11-08-2023
+        description: required only if viewRole is admin and user has admin access, dd-mm-yyyy format.
+        required: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        400:
+          description: Bad Request, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 400
+                  message: bad request
+        401:
+          description: Unauthorized Request, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 401
+                  message: unauthorized
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 500
+                  message: internal server error
+    post:
+      tags:
+      - booking
+      summary: book a seat 
+      security:
+      - bearerAuth: []
+      description: book a seat on specific date 
+      requestBody:
+        $ref: '#/components/requestBodies/BookingRequest'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 200
+                  message: Success
+        400:
+          description: Bad Request, request might failed in validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 400
+                  message: bad request
+        401:
+          description: Unauthorized, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 401
+                  message: unauthorized
+        404:
+          description: requesting details not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 404
+                  message: seatId not found
+        409:
+          description: conflict error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 409
+                  message: user already has booked a seat on the date
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 500
+                  message: internal server error
+  /booking/seats/{seatId}/cancel:
+    patch:
+      tags:
+      - booking
+      security:
+      - bearerAuth: []
+      summary: update the status of user's booked seat 
+      description: update the status of user's booked seat, for example cancelling a booked seat 
+      parameters:
+      - name: seatId
+        in: path
+        example: 21
+        description: unique booked seat identity number
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 200
+                  message: Success
+        400:
+          description: Bad Request, request might failed in validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 400
+                  message: bad request
+        401:
+          description: Unauthorized, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 401
+                  message: unauthorized
+        404:
+          description: requesting details not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 404
+                  message: seatId not found
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 500
+                  message: internal server error
 components:
   schemas:
     Metadata:
@@ -242,17 +419,21 @@ components:
       properties:
         available:
           type: boolean
+        locationId:
+          type: string
+        blockId:
+          type: string
+        floorId:
+          type: string
         seatId:
           type: string
         seatType:
           type: string
-        seatPosition:
+        seatLocation:
           type: string
     InfraResponse:
       type: object
       properties:
-        userId:
-          type: string
         _meta:
           $ref: '#/components/schemas/Metadata'
         infras:
@@ -273,8 +454,6 @@ components:
     SeatingResponse:
       type: object
       properties:
-        userId:
-          type: string
         _meta:
           $ref: '#/components/schemas/Metadata'
         seats:
@@ -297,5 +476,19 @@ components:
             blockId: 'B11'
             floorId: 'F1'
             seatId: 'A302'
-            date: '06-08-2023'            
-            
+            date: '06-08-2023' 
+    CancelRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SeatInfo'
+          example: 
+            locationId: 'PUN'
+            blockId: 'SDB4'
+            floorId: 'F1'
+            seatId: 'B302'
+            date: '06-08-2023'                   
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

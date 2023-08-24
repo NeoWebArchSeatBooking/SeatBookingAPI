@@ -1,7 +1,8 @@
 import { bookingDataAccess } from "../dataaccess/BookingDataAccess";
 import { infraDataAccess } from "../dataaccess/InfraDataAccess";
 import { ConflictError, NotFoundError } from "../errors/AppErrors";
-import { AppHelper } from "../helpers";
+import { AppHelper, FilterHelper } from "../helpers";
+import { Constants } from "../helpers/Constants";
 import { logger } from "../helpers/Logger";
 import {
   SeatInformation,
@@ -12,6 +13,7 @@ import {
   SearchSearchInfo,
 } from "../models";
 import { BookingModel } from "../models/database/Booking";
+import { CancelRequest } from "../models/req/CancelRequest";
 import { UserSeatRequest } from "../models/req/UserSeatsRequest";
 
 class SeatBookingService {
@@ -31,14 +33,22 @@ class SeatBookingService {
   }
 
   public async getAvailableSeats(req: SeatSearchRequest): Promise<SeatInfo[]> {
-    const seatInfos = await this.getInfraSeats(req);
+    const seatDetails = await this.getInfraSeats(req);
     const seats = await bookingDataAccess.getBookedSeatsByFacilities(req);
-    const updatedSeatInfos = seatInfos.seats.map((seat) => {
-      const available = !seats.includes(seat.seatId);
-      const seatInfo: SeatInfo = { available, ...seat };
-      return seatInfo;
+    const updatedSeatInfos: SeatInfo [] = []
+    seatDetails.forEach((seatDet)=>{
+      const mappedSeats = seatDet.seats.map((seat) => {
+        const available = !seats.includes(seat.seatId);
+        const seatInfo: SeatInfo = { available,
+            locationId:seatDet.locationId,
+            blockId:seatDet.blockId,
+            floorId:seatDet.floorId,
+            ...seat };
+        return seatInfo;
+      })
+      updatedSeatInfos.push(...mappedSeats)
     });
-    return updatedSeatInfos;
+    return FilterHelper.applyAvailablityFilter(updatedSeatInfos,req.availability)
   }
 
   private async getInfraSeats(req: SeatSearchRequest) {
@@ -47,10 +57,11 @@ class SeatBookingService {
     if (loc === undefined) throw new NotFoundError("location");
     const block = loc.blocks?.find((block) => block.blockId === req.blockId);
     if (block === undefined) throw new NotFoundError("block");
-    const floor = block.floors?.find((flr) => flr.floorId === req.floorId);
-    if (floor === undefined) throw new NotFoundError("floor");
-
-    const seatInfos = await infraDataAccess.getSeats(
+    if(req.floorId ){
+      const floor = block.floors?.find((flr) => flr.floorId === req.floorId);
+      if (floor === undefined) throw new NotFoundError("floor");
+    }
+    const seatInfos = await infraDataAccess.getSeatsByFields(
       req.locationId,
       req.blockId,
       req.floorId
@@ -59,8 +70,12 @@ class SeatBookingService {
   }
 
   public async bookASeat(req: SeatBookRequest): Promise<void> {
-    const seatInfo = await this.getInfraSeats(req);
-    if (seatInfo.seats.findIndex((seat) => seat.seatId === req.seatId) === -1) {
+    const seatInfos = await this.getInfraSeats(req);
+    if(seatInfos.length !== 1){
+      logger.info(`mutliple seats founds`);
+      throw new ConflictError("seat");
+    }
+    if (seatInfos[0].seats.findIndex((seat) => seat.seatId === req.seatId) === -1) {
       logger.info(`seat ${req.seatId} not valid`);
       throw new NotFoundError("seat");
     }
@@ -69,13 +84,14 @@ class SeatBookingService {
       logger.info(`seat ${req.seatId} not available to take`);
       throw new ConflictError("seat not available now, pick some other seat");
     }
-    const hasBooked = await bookingDataAccess.getBookedSeatsByUserAndDate(
+    const bookings = await bookingDataAccess.getBookedSeatsByUserAndDate(
       req.userId,
-      req.date
+      req.date,
+      Constants.SEAT_STATUS_CDE_ACTIVE
     );
-    if (hasBooked)
+    if (bookings.length > 0)
       throw new ConflictError("user already has booked a seat on the date");
-    await bookingDataAccess.updateSeat(req);
+    await bookingDataAccess.createSeat(req);
   }
 
   private mapToBooking(models: BookingModel[]) {
@@ -84,7 +100,7 @@ class SeatBookingService {
       booking.bookingDate = AppHelper.reformateDate(bookingDS.bookingDate);
       booking.userId = bookingDS.bookingUserId;
       booking.bookingId = bookingDS.id;
-      booking.status = bookingDS.bookingStatus === "A" ? "Active" : "Cancelled";
+      booking.status = AppHelper.getStatusTxt(bookingDS.bookingStatus);
       const seat = new SeatInformation();
       seat.locationId = bookingDS.bookingLocId;
       seat.blockId = bookingDS.bookingBlockId;
@@ -93,6 +109,18 @@ class SeatBookingService {
       booking.seatInformation = seat;
       return booking;
     });
+  }
+
+  public async cancelBookedSeat(cancelRequest: CancelRequest):Promise<void>{
+    const bookedSeat = await bookingDataAccess.getBookedSeatById(cancelRequest.seatId)
+    if(bookedSeat === null){
+      throw new NotFoundError("Seat Id");
+    }
+    const isUpdated = await bookingDataAccess.updateSeatStatusById(
+      cancelRequest.seatId,Constants.SEAT_STATUS_CDE_CANCEL)
+    if(!isUpdated){
+      throw new NotFoundError("seat id");
+    }
   }
 }
 

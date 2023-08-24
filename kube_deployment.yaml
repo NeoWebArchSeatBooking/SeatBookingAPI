@@ -70,4 +70,14 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: sbasecrets
-                  key: sba_db_schema             
+                  key: sba_db_schema
+            - name: INFRA_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sbasecrets
+                  key: infra_db_user
+            - name: INFRA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sbasecrets
+                  key: infra_db_password

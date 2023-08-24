@@ -6,6 +6,10 @@ import {BookingModel} from "../../src/models/database/Booking"
 
 describe("validate BookingDAO",()=>{
 
+    beforeEach(()=>{
+
+    })
+
     test("validate user booked seats",async ()=>{
         BookingModel.findAndCountAll = jest.fn().mockImplementation(()=>{
             return Promise.resolve({rows:[{
@@ -122,7 +126,8 @@ describe("validate BookingDAO",()=>{
             return Promise.resolve([])
         })
         const resp = await bookingDataAccess.getBookedSeatsByUserAndDate("","")
-        expect(resp).toBeFalsy()
+        expect(resp).toBeTruthy()
+        expect(resp.length).toEqual(0)
     })
 
     test("validate updateSeat()",async ()=>{

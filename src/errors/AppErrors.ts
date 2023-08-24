@@ -22,7 +22,7 @@ export class ConflictError extends AppError {
 
 export class AuthError extends AppError {
   constructor(message: string) {
-    super(403, message);
+    super(401, message);
   }
 }
 
@@ -35,6 +35,6 @@ export class NotFoundError extends AppError {
 
 export class ValidationErr extends AppError{
   constructor(key: string) {
-    super(406, `validation failures: ${key}`);
+    super(400, `validation failures: ${key}`);
   }
 }
