@@ -3,7 +3,7 @@ import { AppHelper } from "../helpers";
 import { SeatBookRequest, SeatSearchRequest } from "../models";
 import { BookingModel } from "../models/database/Booking";
 import { logger } from "../helpers/Logger"
-import { Op, ValidationError } from "sequelize";
+import { ValidationError } from "sequelize";
 import { Constants } from "../helpers/Constants";
 import { BookingQueryHelper } from "../helpers/BookingQueryHelper";
 import { UserSeatRequest } from "../models/req/UserSeatsRequest";
