@@ -50,9 +50,9 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
   }
 
   private async setStatus(ctx: Context){
-    if(ctx.body && ctx.body instanceof BaseResponse){
+    if(ctx.body && (ctx.body as any)['_meta']){
       logger.info("setting http status code as response status");
-      ctx.status = (ctx.body as BaseResponse)._meta.status
+      ctx.status = (ctx.body as any)['_meta']['status']
     }
   }
 
