@@ -3,7 +3,7 @@ import { AppHelper } from "../helpers";
 import { SeatBookRequest, SeatSearchRequest } from "../models";
 import { BookingModel } from "../models/database/Booking";
 import { logger } from "../helpers/Logger"
-import { Op } from "sequelize";
+import { Op, ValidationError } from "sequelize";
 import { Constants } from "../helpers/Constants";
 import { BookingQueryHelper } from "../helpers/BookingQueryHelper";
 
@@ -55,7 +55,7 @@ export class BookingDataAccess {
     return [];
   }
 
-  public async createSeat(req: SeatBookRequest,status: string=Constants.SEAT_STATUS_CDE_ACTIVE): Promise<void> {
+  public async createBooking(req: SeatBookRequest,status: string=Constants.SEAT_STATUS_CDE_ACTIVE): Promise<void> {
     try{
       const bookedSeat = await BookingModel.create({
           bookingUserId: req.userId,
@@ -70,7 +70,9 @@ export class BookingDataAccess {
       logger.debug(bookedSeat)
     }catch(err: any){
       logger.error(err)
-      throw new AppError(500,err.message)
+      const message = err instanceof ValidationError 
+        ? err.errors.map((err)=>err.message).join("->") : err.message
+      throw new AppError(500,message)
     }
   }
 

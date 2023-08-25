@@ -33,4 +33,13 @@ export class AppHelper{
         return Constants.SEAT_STATUS_CODE_TXT_MAP.get(statusCde) ?? 
             "unknown"
     }
+
+    public static isGreaterThanCurrentDate(date: Date, days: number){
+        date.setHours(0,0,0,0)
+        const currentDate = new Date()
+        currentDate.setHours(0,0,0,0)
+        currentDate.setDate(currentDate.getDate()+days)
+        return date >= currentDate
+    }
+
 }

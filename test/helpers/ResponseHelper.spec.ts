@@ -24,7 +24,7 @@ describe("Validate ResponseHelper", () => {
       );
       expect(output).toBeTruthy();
       expect(output._meta).toBeTruthy();
-      expect(output._meta.status).toEqual(403);
+      expect(output._meta.status).toEqual(401);
     });
 
     test("validate not found request", () => {

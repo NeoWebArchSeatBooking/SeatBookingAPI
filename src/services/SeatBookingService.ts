@@ -91,7 +91,7 @@ class SeatBookingService {
     );
     if (bookings.length > 0)
       throw new ConflictError("user already has booked a seat on the date");
-    await bookingDataAccess.createSeat(req);
+    await bookingDataAccess.createBooking(req);
   }
 
   private mapToBooking(models: BookingModel[]) {

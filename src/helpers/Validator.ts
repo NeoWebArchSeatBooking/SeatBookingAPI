@@ -3,9 +3,11 @@ import { UserSeatRequest } from "../models/req/UserSeatsRequest"
 import { AppError, ValidationErr } from "../errors/AppErrors";
 import { CancelRequest } from "../models/req/CancelRequest";
 import { SeatSearchRequest } from "../models";
+import { AppHelper } from "./AppHelper";
 
 export class Validator{
 
+    
     public static async validateUserSeatRequest(userSeatRequest: UserSeatRequest){
         try{
           const errors:ValidationError[] = await validate(userSeatRequest,{always:true});
@@ -23,9 +25,9 @@ export class Validator{
         }
     }
 
-    public static async validateSeatSearchRequest(seatSearchRequest: SeatSearchRequest){
+    public static async validateSeatSearchRequest(request: SeatSearchRequest){
         try{
-          const errors:ValidationError[] = await validate(seatSearchRequest,{always:true});
+          const errors:ValidationError[] = await validate(request,{always:true});
           if(errors.length > 0){
             let messages = "["
             for(const er of errors){
@@ -35,7 +37,9 @@ export class Validator{
             }
             throw new ValidationErr(messages+"]")
            }
-           // TODO date should be greater than current date validation
+           if(!AppHelper.isGreaterThanCurrentDate(new Date(AppHelper.reformateDate(request.date)),2)){
+            throw new ValidationErr("Request date should be 2 days later than today")
+           }
         } catch(err:any){
                 throw new AppError(err.code ?? 500,err.message)
         }
@@ -53,7 +57,7 @@ export class Validator{
                 }
             }
             throw new ValidationErr(messages+"]")
-           }
+           }           
         } catch(err:any){
                 throw new AppError(err.code ?? 500,err.message)
         }
