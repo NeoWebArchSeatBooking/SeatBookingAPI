@@ -10,6 +10,6 @@
   "logger": {
     "name": "SeatBookingAPI",
     "level": "debug",
-    "output": "/app.log"
+    "output": "console.log"
   }
 }
