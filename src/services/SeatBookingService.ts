@@ -16,12 +16,13 @@ import { BookingModel } from "../models/database/Booking";
 import { CancelRequest } from "../models/req/CancelRequest";
 import { UserSeatRequest } from "../models/req/UserSeatsRequest";
 
+
 class SeatBookingService {
 
   public async getBookedSeats(userReq: UserSeatRequest): Promise<SearchSearchInfo> {
     const searchInfo = new SearchSearchInfo()
-    if(userReq.role === 'admin' && userReq.view === 'admin'){
-      const {bookingSeats, count } = await bookingDataAccess.getBookedSeatsByDate(userReq.fromDate,userReq.toDate,userReq.offset,userReq.limit);
+    if(userReq.role === Constants.ROLE_ADMIN && userReq.view === Constants.ROLE_ADMIN){
+      const {bookingSeats, count } = await bookingDataAccess.getBookedSeatsByReq(userReq,userReq.offset,userReq.limit);
       searchInfo.total = count
       searchInfo.items = this.mapToBooking(bookingSeats);      
     }else{

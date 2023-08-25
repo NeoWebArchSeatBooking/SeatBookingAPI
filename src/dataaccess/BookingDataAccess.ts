@@ -3,19 +3,23 @@ import { AppHelper } from "../helpers";
 import { SeatBookRequest, SeatSearchRequest } from "../models";
 import { BookingModel } from "../models/database/Booking";
 import { logger } from "../helpers/Logger"
-import { Op, ValidationError } from "sequelize";
+import { ValidationError } from "sequelize";
 import { Constants } from "../helpers/Constants";
 import { BookingQueryHelper } from "../helpers/BookingQueryHelper";
+import { UserSeatRequest } from "../models/req/UserSeatsRequest";
 
 export class BookingDataAccess {
   
-  public async getBookedSeatsByDate(fromDate: string, toDate: string,offset:number=0,limit:number=100): Promise<{bookingSeats:BookingModel[],count:number}>{
+  public async getBookedSeatsByReq(req: UserSeatRequest,offset:number=0,limit:number=100): Promise<{bookingSeats:BookingModel[],count:number}>{
+    
+    const whereCluse = BookingQueryHelper.getBuilder()
+      .andLocationId(req.locationId)
+      .andBlockId(req.blockId)
+      .andDateBetween(AppHelper.reformateDate(req.fromDate),AppHelper.reformateDate(req.toDate))
+      .getWhere()
+    
     const { rows,count } = await BookingModel.findAndCountAll({
-      where: { 
-        bookingDate: {
-          [Op.between]: [AppHelper.reformateDate(fromDate),AppHelper.reformateDate(toDate)]
-        }
-      },
+      where: whereCluse,
       offset,
       limit
     });

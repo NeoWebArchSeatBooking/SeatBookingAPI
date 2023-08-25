@@ -16,7 +16,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
   setRequest(ctx: Context, data?: any) {
     set(ctx.request.query, "userId", data?.userId ?? "sgd.daran@gmail.com");
     set(ctx.request.query, "name", data?.name ?? "DhamoSG");
-    set(ctx.request.query, "role", data?.role ?? "user");
+    set(ctx.request.query, "role", data?.role ?? "admin");
   }
 
   async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {
