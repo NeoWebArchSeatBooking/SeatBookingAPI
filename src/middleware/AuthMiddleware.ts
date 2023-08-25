@@ -6,7 +6,6 @@ import { KoaMiddlewareInterface, Middleware } from "routing-controllers";
 import { AppError, BadRequest } from "../errors/AppErrors";
 import { ResponseHelper } from "../helpers";
 import { logger } from "../helpers/Logger";
-import { BaseResponse } from "../models";
 
 @Middleware({ type: "before" })
 export class AuthMiddleware implements KoaMiddlewareInterface {
