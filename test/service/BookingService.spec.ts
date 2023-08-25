@@ -3,6 +3,8 @@ import { SeatBookRequest, SeatSearchRequest } from "../../src/models";
 import { bookingService } from "../../src/services/SeatBookingService";
 import { UserSeatRequest } from "../../src/models/req/UserSeatsRequest";
 
+jest.mock("../../src/dataaccess/InfraDataAccess");
+import { infraDataAccess } from "../../src/dataaccess/InfraDataAccess";
 jest.mock("../../src/dataaccess/BookingDataAccess");
 import { bookingDataAccess } from "../../src/dataaccess/BookingDataAccess";
 
@@ -26,7 +28,7 @@ describe("Seat Booking Service", () => {
       expect(bookings.items[0].bookingId).toEqual(1);
       expect(bookings.items[1].bookingId).toEqual(2);
       expect(bookings.items[0].bookingDate).toEqual("2023-08-12");
-      expect(bookings.items[0].status).toEqual("Active");
+      expect(bookings.items[0].status).toEqual("active");
       expect(bookings.items[0].seatInformation.seatId).toEqual("A012");
       expect(bookings.items[0].seatInformation.blockId).toEqual("B1");
       expect(bookings.items[0].seatInformation.floorId).toEqual("F1");

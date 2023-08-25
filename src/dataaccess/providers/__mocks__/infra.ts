@@ -1,4 +1,4 @@
-import { SeatLocation, SeatArnmentType } from "../models";
+import { SeatLocation, SeatArnmentType } from "../../../models";
 
 export const LocationJSON = [
     {

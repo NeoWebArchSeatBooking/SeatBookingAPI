@@ -1,4 +1,6 @@
 import { infraService } from "../../src/services/InfraService";
+jest.mock("../../src/dataaccess/InfraDataAccess");
+import { infraDataAccess } from "../../src/dataaccess/InfraDataAccess";
 
 describe("Infra Service", () => {
   test("validate getInfras()", async () => {

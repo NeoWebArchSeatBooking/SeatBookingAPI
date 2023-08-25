@@ -24,4 +24,7 @@ export class SearchSearchInfo{
 
 export class SeatInfo extends SeatType{
     available: boolean
+    locationId: string
+    blockId: string
+    floorId: string
 }

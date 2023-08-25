@@ -3,11 +3,13 @@ import { AppHelper } from "../helpers";
 import { SeatBookRequest, SeatSearchRequest } from "../models";
 import { BookingModel } from "../models/database/Booking";
 import { logger } from "../helpers/Logger"
-import { Op } from "sequelize";
+import { Op, ValidationError } from "sequelize";
+import { Constants } from "../helpers/Constants";
+import { BookingQueryHelper } from "../helpers/BookingQueryHelper";
 
 export class BookingDataAccess {
   
-  public async getBookedSeatsByDate(fromDate: string, toDate: string,offset:number=0,limit:number=25): Promise<{bookingSeats:BookingModel[],count:number}>{
+  public async getBookedSeatsByDate(fromDate: string, toDate: string,offset:number=0,limit:number=100): Promise<{bookingSeats:BookingModel[],count:number}>{
     const { rows,count } = await BookingModel.findAndCountAll({
       where: { 
         bookingDate: {
@@ -32,14 +34,18 @@ export class BookingDataAccess {
   }
 
   public async getBookedSeatsByFacilities(req: SeatSearchRequest): Promise<string[]> {
+    
+    const whereCluse = BookingQueryHelper.getBuilder()
+      .andLocationId(req.locationId)
+      .andBlockId(req.blockId)
+      .andDateisEq(AppHelper.reformateDate(req.date))
+      .andFloorId(req.floorId)
+      .getWhere()
+
     const bookings = await BookingModel.findAll({
-      where: {
-        bookingLocId: req.locationId,
-        bookingBlockId: req.blockId,
-        bookingFloorId: req.floorId,
-        bookingDate: AppHelper.reformateDate(req.date),
-      }
+      where: whereCluse
     });
+    
     if (bookings.length > 0) {
       const seats = bookings.map((bookingDS) => {
         return bookingDS.bookingSeatId;
@@ -49,11 +55,11 @@ export class BookingDataAccess {
     return [];
   }
 
-  public async updateSeat(req: SeatBookRequest): Promise<void> {
+  public async createBooking(req: SeatBookRequest,status: string=Constants.SEAT_STATUS_CDE_ACTIVE): Promise<void> {
     try{
       const bookedSeat = await BookingModel.create({
           bookingUserId: req.userId,
-          bookingStatus: 'A',
+          bookingStatus: status,
           bookingSeatId: req.seatId,
           bookingLocId: req.locationId,
           bookingBlockId: req.blockId,
@@ -64,19 +70,37 @@ export class BookingDataAccess {
       logger.debug(bookedSeat)
     }catch(err: any){
       logger.error(err)
-      throw new AppError(500,err.message)
+      const message = err instanceof ValidationError 
+        ? err.errors.map((err)=>err.message).join("->") : err.message
+      throw new AppError(500,message)
     }
   }
 
-  public async getBookedSeatsByUserAndDate(userId: string, date: string): Promise<boolean> {
+  public async getBookedSeatsByUserAndDate(userId: string, date: string, status: string): Promise<BookingModel[]> {
     const bookings = await BookingModel.findAll({
       where: {
         bookingUserId: userId,
         bookingDate: AppHelper.reformateDate(date),
-        bookingStatus: 'A'
+        bookingStatus: status
       },
     });
-    return bookings.length > 0
+    return bookings
+  }
+
+  public async getBookedSeatById(id: number){
+    return await BookingModel.findByPk(id);
+  }
+
+  public async updateSeatStatusById(bookingId: number,statusCde: string):Promise<boolean>{
+    const [affectedCount] = await BookingModel.update(
+        { bookingStatus: statusCde  },
+        {
+          where: {
+            id:bookingId
+          }
+        }
+      )      
+    return affectedCount > 0  
   }
 
 }

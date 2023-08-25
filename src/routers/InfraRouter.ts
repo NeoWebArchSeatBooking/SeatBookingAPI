@@ -1,5 +1,5 @@
 import { Controller, Get, HeaderParam, QueryParam, QueryParams } from "routing-controllers";
-import { ResponseHelper } from "../helpers";
+import { ResponseHelper, Validator } from "../helpers";
 import { InfraResponse, SeatSearchRequest, SeatingResponse } from "../models";
 import { infraService} from "../services/InfraService"
 import { bookingService } from "../services/SeatBookingService";
@@ -27,6 +27,7 @@ export class InfraRouter {
     req.role = role;
     const response = new SeatingResponse();
     try {
+      await Validator.validateSeatSearchRequest(req)
       response.seats = await bookingService.getAvailableSeats(req);
       ResponseHelper.setSuccessResponse(response);
     } catch (err) {

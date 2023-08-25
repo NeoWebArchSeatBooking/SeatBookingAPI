@@ -9,10 +9,9 @@ spec:
   selector:
     app: seatbooking-app
     name: seatbooking-pod
-  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 4000
 ---
 apiVersion: apps/v1
@@ -71,4 +70,14 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: sbasecrets
-                  key: sba_db_schema             
+                  key: sba_db_schema
+            - name: INFRA_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sbasecrets
+                  key: infra_db_user
+            - name: INFRA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sbasecrets
+                  key: infra_db_password
