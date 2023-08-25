@@ -41,7 +41,6 @@
     "mysql2": "^3.6.0",
     "node-cache": "^5.1.2",
     "pino": "^8.15.0",
-    "pino-pretty": "^10.2.0",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.10.4",
     "sequelize": "^6.32.1",

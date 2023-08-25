@@ -1,15 +1,22 @@
 import config from "config";
 import pino from "pino";
 
-const transportConfig =
-  config.has("logger.output") && config.get("logger.output") !== "console"
-    ? {
-        target: "pino/file",
-        options: { destination: `${config.get("logger.output")}` },
-      }
-    : {
-        target: "pino/file",
-      };
+const consoleTarget = {
+  target: "pino/file"
+}
+
+const fileTarget = {
+  target: "pino/file",
+  options: { destination: `${config.get("logger.output")}` }
+}
+
+function getTargetChannel(){
+    if(config.has("logger.output") && config.get("logger.output") !== "console"){
+      return fileTarget
+    }else{
+      return consoleTarget
+    }
+}
 
 const pinoLogger = pino({
   name: config.get("logger.name"),
@@ -23,7 +30,7 @@ const pinoLogger = pino({
       return { level: label.toUpperCase() };
     },
   },
-  transport: transportConfig,
+  transport: getTargetChannel(),
 });
 
 export const logger = pinoLogger;
