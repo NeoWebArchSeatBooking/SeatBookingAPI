@@ -1,7 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
-import { sbConnector } from "../../helpers/DBProvider";
+import { dbProvider } from "../../dataaccess/providers"
 
 export class BookingModel extends Model{
+  
   declare id: number
   declare bookingUserId: string
   declare bookingDate: string
@@ -11,6 +12,7 @@ export class BookingModel extends Model{
   declare bookingFloorId: string
   declare bookingSeatId: string
   declare bookingUpdateTime: string
+
 }
 
 BookingModel.init({
@@ -62,10 +64,12 @@ BookingModel.init({
     allowNull: false
   }
 }, {
-  sequelize: sbConnector,
+  sequelize: dbProvider.getSBDBConnector(),
   modelName: 'BookingModel',
   tableName: 'booking',
   timestamps: true,
   createdAt: false,
   updatedAt: 'booking_updatetime'
 });
+
+

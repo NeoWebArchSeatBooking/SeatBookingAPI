@@ -1,21 +1,49 @@
 import { InfraPayload, SeatPayload } from "../models"
-import {INFRA_JSON,SEATS_JOSN} from "./infra"
+import { MongoServerError } from "mongodb"
+import { logger } from "../helpers/Logger"
+import { AppError } from "../errors/AppErrors"
+import {infraProvider} from "./providers/InfraProvider"
+import NodeCache from "node-cache"
 
 class InfraDataAccess{
 
-        public async getInfra() : Promise<InfraPayload[]>{
-            return INFRA_JSON
-        }
+    private storage:NodeCache
+    constructor(){
+        this.storage = new NodeCache()
+    }
 
-        public async getSeats(locId: string,blkId: string,flrId:string) : Promise<SeatPayload>{
-            const seatPayload = new SeatPayload()
-            const seats = SEATS_JOSN.filter((floor)=> floor.floorKey === `${locId}${blkId}${flrId}`)[0]
-            seatPayload.seats = seats.seats
-            seatPayload.locationId = locId
-            seatPayload.blockId = blkId
-            seatPayload.floorId = flrId
-            return seatPayload
+    public async getInfra() : Promise<InfraPayload[]>{
+       try{
+        if(this.storage.has('INFRA')){
+            return this.storage.get('INFRA') ?? []
+        }else{
+            const infras = infraProvider.getInfra()
+            this.storage.set('INFRA',infras)
+            return infras
         }
+       }catch(err:any){
+          const errMessage = err instanceof MongoServerError ? err.errmsg : err.message    
+          logger.error(err)
+          throw new AppError(500,errMessage)
+       }
+    }
+
+    public async getSeatsByFields(locId: string,blkId?: string,flrId?:string) : Promise<SeatPayload[]>{
+        let seatDocs : SeatPayload []
+        if(this.storage.has('SEATS')){
+            seatDocs = this.storage.get('SEATS') ?? []
+        }else{
+            seatDocs = await infraProvider.getSeats() 
+            this.storage.set('SEATS',seatDocs)
+        }    
+        
+        const filteredSeats = seatDocs.filter((seat)=>{
+            return seat.locationId === locId
+             && seat.blockId === blkId
+             && ( !flrId || seat.floorId === flrId )
+        })
+        return filteredSeats
+     }
 
 }
 

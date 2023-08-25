@@ -6,7 +6,6 @@ import { KoaMiddlewareInterface, Middleware } from "routing-controllers";
 import { AppError, BadRequest } from "../errors/AppErrors";
 import { ResponseHelper } from "../helpers";
 import { logger } from "../helpers/Logger";
-import { BaseResponse } from "../models";
 
 @Middleware({ type: "before" })
 export class AuthMiddleware implements KoaMiddlewareInterface {
@@ -50,9 +49,9 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
   }
 
   private async setStatus(ctx: Context){
-    if(ctx.body && ctx.body instanceof BaseResponse){
+    if(ctx.body && (ctx.body as any)['_meta']){
       logger.info("setting http status code as response status");
-      ctx.status = (ctx.body as BaseResponse)._meta.status
+      ctx.status = (ctx.body as any)['_meta']['status']
     }
   }
 
