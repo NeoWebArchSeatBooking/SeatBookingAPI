@@ -32,7 +32,6 @@ class MongoProvider implements InfraProvider{
                 db.stats()
                 .then((res)=> resolve(res.ok === 1))
                 .catch((err)=>{reject(err)})
-                resolve(true)
             }).catch((err)=>{
                 reject(err)
             })

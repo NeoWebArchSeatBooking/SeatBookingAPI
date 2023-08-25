@@ -1,6 +1,6 @@
 export module Constants{
     export const VALID_SEAT_STATUS = ['active','cancel','inactive']
-    
+    export const ROLE_ADMIN = 'admin';
     export const SEAT_STATUS_CDE_ACTIVE = 'A'
     export const SEAT_STATUS_CDE_CANCEL = 'C'
     export const SEAT_STATUS_CDE_INACTIVE = 'I'

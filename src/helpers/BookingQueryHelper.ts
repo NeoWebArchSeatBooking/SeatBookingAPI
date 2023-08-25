@@ -1,3 +1,5 @@
+import { Op } from "sequelize"
+
 export class BookingQueryHelper{
 
     private whereClause: any
@@ -37,6 +39,15 @@ export class BookingQueryHelper{
     public andDateisEq(date: string){
         if(date){
             this.whereClause.bookingDate = date
+        }
+        return this
+    }
+
+    public andDateBetween(fromDate: string,toDate: string){
+        if(fromDate && toDate){
+            this.whereClause.bookingDate = {
+                [Op.between]: [fromDate,toDate]
+            }
         }
         return this
     }
