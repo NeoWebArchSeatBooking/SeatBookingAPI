@@ -19,4 +19,6 @@ export class UserSeatRequest extends UserRequest{
     locationId: string
     @IsOptional()
     blockId: string
+    @IsOptional()
+    user: string
 }

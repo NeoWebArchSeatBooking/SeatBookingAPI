@@ -21,8 +21,8 @@ infraProvider.isProviderConnected().catch((err)=>{
 const cors = {
   origin: "*",
   maxAge: "600",
-  allowMethods: "GET,POST,PATCH",
-  allowHeaders: "['content-type','authorization']",
+  allowMethods: "GET,POST,PATCH,OPTIONS",
+  allowHeaders: "*",
 };
 
 const port = process.env.APP_PORT || config.get("app.port");

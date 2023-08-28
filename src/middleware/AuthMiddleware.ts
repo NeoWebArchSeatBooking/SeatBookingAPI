@@ -68,7 +68,8 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
       };
       const resp = await axios.get(config.get("clients.idp"), options);
       if (resp.data.profile) {
-        this.setRequest(ctx);
+        logger.debug({response:resp.data});
+        this.setRequest(ctx,resp.data.profile);
         await next();
         this.setStatus(ctx)
       } else {

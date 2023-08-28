@@ -52,4 +52,11 @@ export class BookingQueryHelper{
         return this
     }
 
+    public andUserId(userId: string){
+        if(userId){
+            this.whereClause.bookingUserId = userId
+        }
+        return this
+    }
+
 }

@@ -16,6 +16,7 @@ export class BookingDataAccess {
       .andLocationId(req.locationId)
       .andBlockId(req.blockId)
       .andDateBetween(AppHelper.reformateDate(req.fromDate),AppHelper.reformateDate(req.toDate))
+      .andUserId(req.user)
       .getWhere()
     
     const { rows,count } = await BookingModel.findAndCountAll({
