@@ -6,7 +6,7 @@ export class UserRequest {
     userId: string;
     @IsNotEmpty()
     role: string;
-    view: string = 'USER'
+    viewRole: string = 'USER'
     offset?: number
     @ValidateIf(o=> o.limit !== undefined)
     @IsNumber()
