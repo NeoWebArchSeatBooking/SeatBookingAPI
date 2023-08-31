@@ -1,15 +1,15 @@
 {
   "app": {
     "prefix": "/v1",
-    "port": "",
-    "docs": "/v1/seat-management/api-docs"
+    "port": "4000",
+    "docs": "/v1/api-docs"
   },
   "clients": {
     "idp": "http://localhost:3000/v1/idp/status"
   },
   "logger": {
     "name": "SeatBookingAPI",
-    "level": "debug",
-    "output": "console.log"
+    "level": "fatal",
+    "output": "console"
   }
 }

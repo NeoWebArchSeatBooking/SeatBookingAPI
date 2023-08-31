@@ -36,7 +36,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
           new BadRequest("bearer token missing")
         );
       } else {
-        logger.debug("request flows through IDP provider");
+        logger.debug("request goes through IDP provider");
         await this.checkToken(ctx, next, auth);
       }
     } catch (err: any) {
@@ -50,7 +50,7 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
 
   private async setStatus(ctx: Context){
     if(ctx.body && (ctx.body as any)['_meta']){
-      logger.info("setting http status code as response status");
+      logger.debug("setting http status code as response status");
       ctx.status = (ctx.body as any)['_meta']['status']
     }
   }

@@ -1,4 +1,4 @@
-import { SeatBookRequest, SeatSearchRequest } from "../../models";
+import { SeatBookRequest, SeatSearchRequest, UserSeatRequest } from "../../models";
 import { BookingModel } from "../../models/database/Booking";
 
 class BookingDataAccess {
@@ -91,7 +91,34 @@ class BookingDataAccess {
     return Promise.resolve(true);
   }
 
+  public async getBookedSeatsByReq(req: UserSeatRequest,offset:number=0,limit:number=100): Promise<{bookingSeats:BookingModel[],count:number}>{
+    return Promise.resolve({bookingSeats:[
+      {
+        id: 1,
+        bookingUserId: "testuser",
+        bookingDate: "12-08-2023",
+        bookingStatus: "A",
+        bookingLocId: "L1",
+        bookingBlockId: "B1",
+        bookingFloorId: "F1",
+        bookingSeatId: "A012",
+        bookingUpdateTime: "",
+      },
+      {
+        id: 2,
+        bookingUserId: "testuser",
+        bookingDate: "13-08-2023",
+        bookingStatus: "A",
+        bookingLocId: "L1",
+        bookingBlockId: "B1",
+        bookingFloorId: "F1",
+        bookingSeatId: "A102",
+        bookingUpdateTime: "",
+      },
+    ] as BookingModel[],count:2});
+  }
   
+
 }
 
 export const bookingDataAccess = new BookingDataAccess();

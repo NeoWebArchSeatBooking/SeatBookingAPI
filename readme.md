@@ -7,7 +7,7 @@ This API provides various endpoints to fetch user seat preferences, infra facili
 
 ### base path
 ```
-/v1/seat-management
+/v1
 ```
 ### Get Infrastructure Information
 #### GET
@@ -34,7 +34,7 @@ returns the list of available location and facility
 
 ### Get the booked seat information
 ```
-Get /seats
+Get /booking/seats
 ```
 ##### Summary:
 fetch user's booking details
@@ -47,7 +47,8 @@ fetch user's booking details if user role is user otherwise fetch all user's boo
 | ---- | ---------- | ----------- | -------- | ---- |
 | Authorization | header | Bearer token | Yes | string |
 | viewRole | query | default user, valid values are user,admin | No | string |
-| date | query | required only if viewRole is admin and user is admin, dd-mm-yyyy format | No | string |
+| fromDate | query | required only if viewRole is admin and user is admin, dd-mm-yyyy format | No | string |
+| toDate | query | required only if viewRole is admin and user is admin, dd-mm-yyyy format | No | string |
 
 ##### Responses
 | Code | Description |
@@ -58,7 +59,7 @@ fetch user's booking details if user role is user otherwise fetch all user's boo
 
 ### Book a seat
 ```
-Post /seats
+Post /booking/seats
 ```
 ##### Summary:
 book a seat
@@ -105,18 +106,19 @@ fetch available seats for the given inputs such as location, block, floor and da
 | date | query | dd-mm-yyyy format | Yes | string |
 | locationId | query | specific location id | Yes | string |
 | blockId | query | specific block | Yes | string |
-| floorId | query | specific floor | Yes | string |
+| floorId | query | specific floor | No | string |
 
 ##### Responses
 | Code | Description |
 | ---- | ----------- |
 | 200 | successful operation |
-| 400 | Bad Request, pass valid bearer token in authroization |
+| 400 | Bad Request, pass al mandate fields |
+| 401 | Unauthorized request, pass valid bearer token in authroization |
 | 500 | System failed to respond |
 
 ## Swagger Document
 ```
-http://host:port/v1/seat-management/api-docs
+http://host:port/v1/api-docs
 ```
 
 ## Run Locally
@@ -149,7 +151,4 @@ Start the server
 ## Authors
 
 - [@DhamoSG](https://github.com/sgddaran)
-- [@Nidhin CG](https://github.com/nidhincg)
-- [@Sreeram CG](https://github.com/sreerambasam)
-- [@Rahul](https://github.com/rahulsuda)
 

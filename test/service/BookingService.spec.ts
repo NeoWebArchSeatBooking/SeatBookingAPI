@@ -1,5 +1,5 @@
 import { ConflictError, NotFoundError } from "../../src/errors/AppErrors";
-import { SeatBookRequest, SeatSearchRequest } from "../../src/models";
+import { CancelRequest, SeatBookRequest, SeatSearchRequest } from "../../src/models";
 import { bookingService } from "../../src/services/SeatBookingService";
 import { UserSeatRequest } from "../../src/models/req/UserSeatsRequest";
 
@@ -35,7 +35,52 @@ describe("Seat Booking Service", () => {
       expect(bookings.items[0].seatInformation.locationId).toEqual("L1");
     });
 
+    test("with valid fetch request for admin", async () => {
+      const req = new UserSeatRequest()
+      req.role = 'admin'
+      req.viewRole = 'admin'
+      
+      const bookings = await bookingService.getBookedSeats(req);
+      expect(bookings).toBeTruthy();
+      expect(bookings.items).toBeTruthy();
+      expect(bookings.items.length).toEqual(2);
+      expect(bookings.items[0].bookingId).toEqual(1);
+      expect(bookings.items[1].bookingId).toEqual(2);
+      expect(bookings.items[0].bookingDate).toEqual("2023-08-12");
+      expect(bookings.items[0].status).toEqual("active");
+      expect(bookings.items[0].seatInformation.seatId).toEqual("A012");
+      expect(bookings.items[0].seatInformation.blockId).toEqual("B1");
+      expect(bookings.items[0].seatInformation.floorId).toEqual("F1");
+      expect(bookings.items[0].seatInformation.locationId).toEqual("L1");
+    });
   });
+
+  describe("validate cancelBookedSeat()", () => {
+    test("with valif info", async () => {
+      const request = new CancelRequest();
+      request.seatId = 1;
+      try {
+        await bookingService.cancelBookedSeat(request);
+      } catch (err: any) {
+        expect(err).toBeFalsy()
+      }
+    });
+
+    test("with invalid seat info", async () => {
+      const request = new CancelRequest();
+      request.seatId = 1;
+      bookingDataAccess.getBookedSeatById = jest.fn().mockImplementation(()=>{
+        return Promise.resolve(null)
+      })
+      try {
+        await bookingService.cancelBookedSeat(request);
+      } catch (err: any) {
+        expect(err).toBeInstanceOf(NotFoundError);
+        expect(err.message).toEqual("Seat Id not found");
+      }
+    });
+
+  })
 
   describe("validate getAvailableSeats()", () => {
     test("with invalid facility location info", async () => {
@@ -79,6 +124,7 @@ describe("Seat Booking Service", () => {
       request.locationId = "TCO";
       request.blockId = "SDB1";
       request.floorId = "F1";
+      request.availability = "true"
       const seats = await bookingService.getAvailableSeats(request);
       expect(seats).toBeTruthy();
       expect(seats.length > 0).toBeTruthy();
