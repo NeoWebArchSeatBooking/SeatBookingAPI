@@ -4,7 +4,8 @@ import { createKoaServer } from "routing-controllers";
 import { dbProvider,infraProvider } from "./dataaccess/providers";
 import { logger } from "./helpers/Logger";
 import { AuthMiddleware } from "./middleware/AuthMiddleware";
-import { BookingRouter, InfraRouter } from "./routers";
+import { BookingRouter, InfraRouter, PreferenceRouter } from "./routers";
+import { LogMiddleware } from "./middleware/LogMiddleware";
 const yamljs = require("yamljs"); // eslint-disable-line  @typescript-eslint/no-var-requires
 const spec = yamljs.load("./swagger-doc/swagger.yaml");
 
@@ -29,8 +30,8 @@ const port = process.env.APP_PORT || config.get("app.port");
 export const app = createKoaServer({
   cors,
   routePrefix: config.get("app.prefix"),
-  controllers: [InfraRouter, BookingRouter],
-  middlewares: [AuthMiddleware],
+  controllers: [InfraRouter, BookingRouter, PreferenceRouter],
+  middlewares: [LogMiddleware,AuthMiddleware],
   validation: false
 });
 

@@ -17,32 +17,36 @@ class InfraDataAccess{
         if(this.storage.has('INFRA')){
             return this.storage.get('INFRA') ?? []
         }else{
-            const infras = infraProvider.getInfra()
+            const infras = await infraProvider.getInfra()
             this.storage.set('INFRA',infras)
             return infras
         }
        }catch(err:any){
-          const errMessage = err instanceof MongoServerError ? err.errmsg : err.message    
           logger.error(err)
-          throw new AppError(500,errMessage)
+          throw new AppError(500,err.message)
        }
     }
 
-    public async getSeatsByFields(locId: string,blkId?: string,flrId?:string) : Promise<SeatPayload[]>{
-        let seatDocs : SeatPayload []
-        if(this.storage.has('SEATS')){
-            seatDocs = this.storage.get('SEATS') ?? []
-        }else{
-            seatDocs = await infraProvider.getSeats() 
-            this.storage.set('SEATS',seatDocs)
-        }    
-        
-        const filteredSeats = seatDocs.filter((seat)=>{
-            return seat.locationId === locId
-             && seat.blockId === blkId
-             && ( !flrId || seat.floorId === flrId )
-        })
-        return filteredSeats
+    public async getSeatsByFields(locId: string,blkId: string,flrId?:string) : Promise<SeatPayload[]>{
+        try{
+            let seatDocs : SeatPayload []
+            if(this.storage.has('SEATS')){
+                seatDocs = this.storage.get('SEATS') ?? []
+            }else{
+                seatDocs = await infraProvider.getSeats() 
+                this.storage.set('SEATS',seatDocs)
+            }    
+            
+            const filteredSeats = seatDocs.filter((seat)=>{
+                return seat.locationId === locId
+                && seat.blockId === blkId
+                && ( !flrId || seat.floorId === flrId )
+            })
+            return filteredSeats
+        }catch(err:any){
+            logger.error(err)
+            throw new AppError(500,err.message)
+        }
      }
 
 }

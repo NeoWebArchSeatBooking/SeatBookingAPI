@@ -16,9 +16,9 @@ class MockProvider implements InfraProvider{
         return Promise.resolve(SEATS_JOSN.map((json)=>{
             const seatPayLoad = new SeatPayload()
                 seatPayLoad.seats = json.seats as SeatType[]
-                seatPayLoad.locationId = json.floorKey.substring(0,3)
-                seatPayLoad.blockId = json.floorKey.substring(3,7)
-                seatPayLoad.floorId = json.floorKey.substring(7)
+                seatPayLoad.locationId = json.locationId
+                seatPayLoad.blockId = json.blockId
+                seatPayLoad.floorId = json.floorId
                 return seatPayLoad
         }))
      }

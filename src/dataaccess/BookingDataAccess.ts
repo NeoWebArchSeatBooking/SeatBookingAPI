@@ -7,11 +7,12 @@ import { ValidationError } from "sequelize";
 import { Constants } from "../helpers/Constants";
 import { BookingQueryHelper } from "../helpers/BookingQueryHelper";
 import { UserSeatRequest } from "../models/req/UserSeatsRequest";
+const cls = {class : "BookingDataAccess"}
 
 export class BookingDataAccess {
   
   public async getBookedSeatsByReq(req: UserSeatRequest,offset:number=0,limit:number=100): Promise<{bookingSeats:BookingModel[],count:number}>{
-    
+    logger.debug(cls,"fetching booked seats by various filters")
     const whereCluse = BookingQueryHelper.getBuilder()
       .andLocationId(req.locationId)
       .andBlockId(req.blockId)
@@ -29,6 +30,7 @@ export class BookingDataAccess {
   }
 
   public async getBookedSeatsByUser(userId: string,offset:number=0,limit:number=25): Promise<{bookingSeats:BookingModel[],count:number}> {
+    logger.debug(cls,"fetching booked seats for user")
     const { rows,count } = await BookingModel.findAndCountAll({
       where: { bookingUserId: userId },
       offset,
@@ -39,7 +41,7 @@ export class BookingDataAccess {
   }
 
   public async getBookedSeatsByFacilities(req: SeatSearchRequest): Promise<string[]> {
-    
+    logger.debug(cls,"fetching booked seats by various facility filters")
     const whereCluse = BookingQueryHelper.getBuilder()
       .andLocationId(req.locationId)
       .andBlockId(req.blockId)
@@ -62,7 +64,8 @@ export class BookingDataAccess {
 
   public async createBooking(req: SeatBookRequest,status: string=Constants.SEAT_STATUS_CDE_ACTIVE): Promise<void> {
     try{
-      const bookedSeat = await BookingModel.create({
+      logger.debug(cls,"creating a booked seat entry")
+      await BookingModel.create({
           bookingUserId: req.userId,
           bookingStatus: status,
           bookingSeatId: req.seatId,
@@ -72,9 +75,8 @@ export class BookingDataAccess {
           bookingDate: AppHelper.reformateDate(req.date),   
           bookingUpdateTime: Date.now().toString()   
       });
-      logger.debug(bookedSeat)
     }catch(err: any){
-      logger.error(err)
+      logger.error({...cls,...err})
       const message = err instanceof ValidationError 
         ? err.errors.map((err)=>err.message).join("->") : err.message
       throw new AppError(500,message)
@@ -82,6 +84,7 @@ export class BookingDataAccess {
   }
 
   public async getBookedSeatsByUserAndDate(userId: string, date: string, status: string): Promise<BookingModel[]> {
+    logger.debug(cls,"fetching booked seats for user on specific date")
     const bookings = await BookingModel.findAll({
       where: {
         bookingUserId: userId,
@@ -93,10 +96,12 @@ export class BookingDataAccess {
   }
 
   public async getBookedSeatById(id: number){
+    logger.debug(cls,"fetching booked seats for specific booked id")
     return await BookingModel.findByPk(id);
   }
 
   public async updateSeatStatusById(bookingId: number,statusCde: string):Promise<boolean>{
+    logger.debug(cls,"updating seat status")
     const [affectedCount] = await BookingModel.update(
         { bookingStatus: statusCde  },
         {

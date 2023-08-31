@@ -6,7 +6,6 @@ import { SeatSearchRequest } from "../models";
 import { AppHelper } from "./AppHelper";
 
 export class Validator{
-
     
     public static async validateUserSeatRequest(userSeatRequest: UserSeatRequest){
         try{

@@ -21,8 +21,8 @@ class MongoProvider implements InfraProvider{
     private readonly col_seats = 'seats'
 
     constructor(){
-        const user = process.env.INFRA_DB_USER || "dummy";
-        const pwd = process.env.INFRA_PASSWORD || "dummy";
+        const user = process.env.INFRA_DB_USER || "sgddaran";
+        const pwd = process.env.INFRA_PASSWORD || "UprSDfnEElWcb3i8";
         this.url = `mongodb+srv://${user}:${pwd}@infradb.gohly8s.mongodb.net/?retryWrites=true&w=majority`
     }
 

@@ -21,14 +21,6 @@ export class AppHelper{
         return `${items[2]}-${items[1]}-${items[0]}`;
     }
 
-    public static getStatusCode(statusTxt: string){
-        if(Constants.SEAT_STATUS_TXT_CODE_MAP.has(statusTxt)){
-            return Constants.SEAT_STATUS_TXT_CODE_MAP.get(statusTxt)
-        }else{
-            return Constants.SEAT_STATUS_TXT_CODE_MAP.get('unknown')
-        }
-    }
-
     public static getStatusTxt(statusCde: string): string{
         return Constants.SEAT_STATUS_CODE_TXT_MAP.get(statusCde) ?? 
             "unknown"
