@@ -1,5 +1,4 @@
 import { InfraPayload, SeatPayload } from "../models"
-import { MongoServerError } from "mongodb"
 import { logger } from "../helpers/Logger"
 import { AppError } from "../errors/AppErrors"
 import {infraProvider} from "./providers/InfraProvider"
