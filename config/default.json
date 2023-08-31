@@ -2,7 +2,7 @@
   "app": {
     "prefix": "/v1",
     "port": "4000",
-    "docs": "/v1/seat-management/api-docs"
+    "docs": "/v1/api-docs"
   },
   "clients": {
     "idp": "http://localhost:3000/v1/idp/status"

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, QueryParams } from "routing-controllers";
-import { BaseResponse, UserRequest,PreferenceRequest,PreferenceResponse } from "../models";
-import { ResponseHelper, logger } from "../helpers";
+import { ResponseHelper, Validator, logger } from "../helpers";
+import { BaseResponse, PreferenceRequest, PreferenceResponse, UserRequest } from "../models";
 import { preferenceService } from "../services/PreferenceService";
 
 @Controller("/preference")
@@ -28,6 +28,7 @@ export class PreferenceRouter {
     ):Promise<BaseResponse>{
         const response  = new BaseResponse()
         try{
+            await Validator.validatePreferenceRequest(preferenceRequest)
             await preferenceService.createPreference(userRequest.userId,preferenceRequest)
             ResponseHelper.setSuccessResponse(response);
         }catch(err:any){
@@ -39,7 +40,6 @@ export class PreferenceRouter {
 
     @Patch('/:Id/cancel')
     public async cancelPreference(
-        @QueryParams() userRequest : UserRequest,
         @Param('Id') id: number
     ):Promise<BaseResponse>{
         const response  = new BaseResponse()
