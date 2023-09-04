@@ -3,9 +3,9 @@ Seat Booking API is the REST based interface built on NodeJS which allows google
 
 ## Version: 1.0.0
 ## Pre-Requirements
-1.Depends on MySql and MongoDB datasources for Booking and Infra data's respectively 
-1.Requires Google user's token id as bearer token to access API.
-1.API using the https://github.com/NeoWebArchSeatBooking/IdentityAPI to authenticate & authorize the given token
+- Depends on MySql and MongoDB datasources for Booking and Infra data's respectively. 
+- Requires Google user's token id as bearer token to access API.
+- API using the https://github.com/NeoWebArchSeatBooking/IdentityAPI to authenticate & authorize the given token
 
 ## API Reference
 ### /facilities
@@ -174,6 +174,7 @@ http://host:port/v1/api-docs
 
 ## Local Setup
 Refer Pre-Requirement section for dependency setup.
+
 Clone the project
 
 ```bash
