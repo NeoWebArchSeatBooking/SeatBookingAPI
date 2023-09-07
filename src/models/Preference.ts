@@ -1,6 +1,6 @@
 export class Preference{
     id: number
-    type: string
+    key: string
     value: string
     status: string
 }
