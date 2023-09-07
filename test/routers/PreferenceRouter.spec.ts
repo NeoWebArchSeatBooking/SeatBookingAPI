@@ -54,7 +54,7 @@ describe("PreferenceRouter",()=>{
     describe("Update Preferences",()=>{
         
         test("should return 200",async ()=>{
-            const resp = await supertest(server).post(path).send({type:'locId',value:'TCO'}).set({'test':'test'}).expect(200)
+            const resp = await supertest(server).post(path).send({key:'locId',value:'TCO'}).set({'test':'test'}).expect(200)
             expect(resp).toBeDefined()
             expect(resp.body).toBeDefined()
             expect(resp.body._meta).toBeDefined()
@@ -62,14 +62,14 @@ describe("PreferenceRouter",()=>{
         })
 
         test("should return 400",async ()=>{
-            const resp = await supertest(server).post(path).send({type:'locId',value:''}).set({'test':'test'}).expect(400)
+            const resp = await supertest(server).post(path).send({key:'locId',value:''}).set({'test':'test'}).expect(400)
             expect(resp).toBeDefined()
             expect(resp.body).toBeDefined()
             expect(resp.body._meta.status).toEqual(400)
         })
 
         test("should return 500",async ()=>{
-            const resp = await supertest(server).post(path).send({type:'locId',value:'TCO'}).set({'authorization':'bearer test'}).expect(500)
+            const resp = await supertest(server).post(path).send({key:'locId',value:'TCO'}).set({'authorization':'bearer test'}).expect(500)
             expect(resp).toBeDefined()
             expect(resp.body).toBeDefined()
             expect(resp.body._meta.status).toEqual(500)

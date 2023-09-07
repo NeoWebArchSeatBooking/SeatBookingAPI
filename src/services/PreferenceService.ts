@@ -26,7 +26,7 @@ class PreferenceService{
         return preferences.map((pref)=>{
             const preference = new Preference()
             preference.id = pref.id
-            preference.type = pref.preferenceType
+            preference.key = pref.preferenceType
             preference.value = pref.preferenceValue
             preference.status = pref.preferenceActive
             return preference
