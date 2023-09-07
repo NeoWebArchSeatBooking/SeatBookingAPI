@@ -49,7 +49,7 @@ describe("PreferenceDataAccess",()=>{
                 PreferenceModel.create = jest.fn().mockImplementation(()=>{
                     return Promise.resolve({})
                 }) 
-                await preferenceDataAccess.createPreference('test',{type:'',value:''})
+                await preferenceDataAccess.createPreference('test',{key:'',value:''})
             }catch(err:any){
                 expect(err).toBeFalsy()
             }
@@ -68,7 +68,7 @@ describe("PreferenceDataAccess",()=>{
                      [])
                 return Promise.reject(new ValidationError('validation error',[item]))
                 }) 
-                await preferenceDataAccess.createPreference('test',{type:'',value:''})
+                await preferenceDataAccess.createPreference('test',{key:'',value:''})
             }catch(err:any){
                 expect(err).toBeTruthy()
                 expect(err.message).toEqual("message: string")
@@ -80,7 +80,7 @@ describe("PreferenceDataAccess",()=>{
                 PreferenceModel.create = jest.fn().mockImplementation(()=>{
                 return Promise.reject(new Error('validation error'))
                 }) 
-                await preferenceDataAccess.createPreference('test',{type:'',value:''})
+                await preferenceDataAccess.createPreference('test',{key:'',value:''})
             }catch(err:any){
                 expect(err).toBeTruthy()
                 expect(err.message).toEqual("validation error")

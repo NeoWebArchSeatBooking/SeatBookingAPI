@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 
 export class PreferenceRequest {
     @IsNotEmpty()
-    type: string;
+    key: string;
     @IsNotEmpty()
     value: string;    
 }
