@@ -11,7 +11,7 @@ class InfraDataAccess {
          seatDoc.locationId = locId
          seatDoc.blockId = blkId
          seatDoc.floorId = flrId
-         seatDoc.seats = SEATS_JOSN.find((seats)=>seats.floorKey === `${locId}${blkId}${flrId}`)?.seats ?? []
+         seatDoc.seats = SEATS_JOSN.find((seats)=>seats.locationId === locId && seatDoc.blockId === blkId && seatDoc.floorId === flrId)?.seats ?? []
          return Promise.resolve([seatDoc])
       }
 }

@@ -238,7 +238,9 @@ export const INFRA_JSON = [
 ]
 
 export const SEATS_JOSN = [{
-    floorKey: "TCOSDB1F1",
+    locationId:'TCO',
+    blockId:'SDB1',
+    floorId: "F1",
     seats: [
         {
             seatId: "A101",
@@ -302,6 +304,9 @@ export const SEATS_JOSN = [{
         }
     ]
 },{
+    locationId:'TCO',
+    blockId:'SDB1',
+    floorId: "F2",
     floorKey: "TCOSDB1F2",
     seats: [
         {
@@ -366,6 +371,9 @@ export const SEATS_JOSN = [{
         }
     ]
 },{
+    locationId:'TCO',
+    blockId:'SDB2',
+    floorId: "F1",
     floorKey: "TCOSDB2F1",
     seats: [
         {
@@ -430,6 +438,9 @@ export const SEATS_JOSN = [{
         }
     ]
 },{
+    locationId:'TCO',
+    blockId:'SDB2',
+    floorId: "F2",
     floorKey: "TCOSDB2F2",
     seats: [
         {
@@ -494,6 +505,9 @@ export const SEATS_JOSN = [{
         }
     ]
 },{
+    locationId:'KOC',
+    blockId:'SDB1',
+    floorId: "F1",
     floorKey: "KOCSDB1F1",
     seats: [
         {
@@ -558,6 +572,9 @@ export const SEATS_JOSN = [{
         }
     ]
 },{
+    locationId:'KOC',
+    blockId:'SDB1',
+    floorId: "F2",
     floorKey: "KOCSDB1F2",
     seats: [
         {
@@ -622,6 +639,9 @@ export const SEATS_JOSN = [{
         }
     ]
 },{
+    locationId:'KOC',
+    blockId:'SDB2',
+    floorId: "F1",
     floorKey: "KOCSDB2F1",
     seats: [
         {
@@ -686,6 +706,9 @@ export const SEATS_JOSN = [{
         }
     ]
 },{
+    locationId:'KOC',
+    blockId:'SDB2',
+    floorId: "F3",
     floorKey: "KOCSDB2F2",
     seats: [
         {

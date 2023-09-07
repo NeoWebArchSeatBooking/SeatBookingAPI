@@ -153,14 +153,28 @@ paths:
       summary: fetch user's booking details
       description: fetch user's booking details if user role is user otherwise fetch all user's booking details for given date
       parameters:
-      - name: view
+      - name: viewRole
         in: query
         example: admin
         description: default user, valid values are user & admin
         required: false
         schema:
           type: string
-      - name: date
+      - name: user
+        in: query
+        example: xyz@gmail.com
+        description: applicable only for admin
+        required: false
+        schema:
+          type: string
+      - name: fromDate
+        in: query
+        example: 11-08-2023
+        description: required only if viewRole is admin and user has admin access, dd-mm-yyyy format.
+        required: false
+        schema:
+          type: string
+      - name: toDate
         in: query
         example: 11-08-2023
         description: required only if viewRole is admin and user has admin access, dd-mm-yyyy format.
@@ -341,6 +355,128 @@ paths:
                 _meta:
                   status: 500
                   message: internal server error
+  /preference:
+    get:
+      tags:
+      - preference
+      security:
+      - bearerAuth: []
+      summary: fetch list of preferences added by user
+      description: returns the list of preferences added by user
+      responses:
+        200:
+          description: list of preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferenceResponse'
+        401:
+          description: Unauthorized, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 401
+                  message: unauthorized
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 500
+                  message: internal server error
+    post:
+      tags:
+      - preference
+      security:
+      - bearerAuth: []
+      summary: create a preference
+      description: create a new preference for user
+      requestBody:
+        $ref: '#/components/requestBodies/PreferenceRequest'
+      responses:
+        200:
+          description: success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 200
+                  message: success  
+        401:
+          description: Unauthorized, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 401
+                  message: unauthorized
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 500
+                  message: internal server error
+  /preference/{id}/cancel:
+    patch:
+      tags:
+      - preference
+      security:
+      - bearerAuth: []
+      summary: cancel the preference
+      description: cancel the preference
+      parameters:
+      - name: id
+        in: path
+        example: 21
+        description: unique preference identity number
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 200
+                  message: success  
+        401:
+          description: Unauthorized, pass valid bearer token in authroization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 401
+                  message: unauthorized
+        500:
+          description: System failed to respond
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+              example: 
+                _meta:
+                  status: 500
+                  message: internal server error            
 components:
   schemas:
     Metadata:
@@ -431,6 +567,33 @@ components:
           type: string
         seatLocation:
           type: string
+    PreferencePayload:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+    Preference:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+        active:
+          type: boolean
+        id:
+          type: number
+    PreferenceResponse:
+      type: object
+      properties:
+        _meta:
+          $ref: '#/components/schemas/Metadata'
+        preferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/Preference'      
     InfraResponse:
       type: object
       properties:
@@ -487,7 +650,15 @@ components:
             blockId: 'SDB4'
             floorId: 'F1'
             seatId: 'B302'
-            date: '06-08-2023'                   
+            date: '06-08-2023'
+    PreferenceRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PreferencePayload'
+          example: 
+            type: 'locationId'
+            value: 'PUN'
   securitySchemes:
     bearerAuth:
       type: http

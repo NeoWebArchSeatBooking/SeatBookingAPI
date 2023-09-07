@@ -11,21 +11,24 @@ import {
   SeatInfo,
   SeatSearchRequest,
   SearchSearchInfo,
+  CancelRequest,
+  UserSeatRequest
 } from "../models";
 import { BookingModel } from "../models/database/Booking";
-import { CancelRequest } from "../models/req/CancelRequest";
-import { UserSeatRequest } from "../models/req/UserSeatsRequest";
+const cls = {class : "SeatBookingService"}
 
 class SeatBookingService {
 
   public async getBookedSeats(userReq: UserSeatRequest): Promise<SearchSearchInfo> {
     const searchInfo = new SearchSearchInfo()
-    if(userReq.role === 'admin' && userReq.view === 'admin'){
-      const {bookingSeats, count } = await bookingDataAccess.getBookedSeatsByDate(userReq.fromDate,userReq.toDate,userReq.offset,userReq.limit);
+    if(userReq.role === Constants.ROLE_ADMIN && userReq.viewRole === Constants.ROLE_ADMIN){
+      logger.debug(cls,"get booked seats for admin")
+      const { bookingSeats, count } = await bookingDataAccess.getBookedSeatsByReq(userReq,userReq.offset,userReq.limit);
       searchInfo.total = count
       searchInfo.items = this.mapToBooking(bookingSeats);      
     }else{
-      const {bookingSeats, count }  = await bookingDataAccess.getBookedSeatsByUser(userReq.userId,userReq.offset,userReq.limit);
+      logger.debug(cls,"get booked seats for user")
+      const { bookingSeats, count }  = await bookingDataAccess.getBookedSeatsByUser(userReq.userId,userReq.offset,userReq.limit);
       searchInfo.total = count
       searchInfo.items = this.mapToBooking(bookingSeats);       
     }
@@ -33,6 +36,7 @@ class SeatBookingService {
   }
 
   public async getAvailableSeats(req: SeatSearchRequest): Promise<SeatInfo[]> {
+    logger.debug(cls,"get available seats")
     const seatDetails = await this.getInfraSeats(req);
     const seats = await bookingDataAccess.getBookedSeatsByFacilities(req);
     const updatedSeatInfos: SeatInfo [] = []
@@ -47,11 +51,12 @@ class SeatBookingService {
         return seatInfo;
       })
       updatedSeatInfos.push(...mappedSeats)
-    });
+    });    
     return FilterHelper.applyAvailablityFilter(updatedSeatInfos,req.availability)
   }
 
   private async getInfraSeats(req: SeatSearchRequest) {
+    logger.debug(cls,"validate facilities")
     const infras = await infraDataAccess.getInfra();
     const loc = infras.find((loc) => loc.locationId === req.locationId);
     if (loc === undefined) throw new NotFoundError("location");
@@ -61,6 +66,7 @@ class SeatBookingService {
       const floor = block.floors?.find((flr) => flr.floorId === req.floorId);
       if (floor === undefined) throw new NotFoundError("floor");
     }
+    logger.debug(cls,"fetch seats for facility request")
     const seatInfos = await infraDataAccess.getSeatsByFields(
       req.locationId,
       req.blockId,
@@ -72,18 +78,19 @@ class SeatBookingService {
   public async bookASeat(req: SeatBookRequest): Promise<void> {
     const seatInfos = await this.getInfraSeats(req);
     if(seatInfos.length !== 1){
-      logger.info(`mutliple seats founds`);
+      logger.info(cls,`mutliple seats founds`);
       throw new ConflictError("seat");
     }
     if (seatInfos[0].seats.findIndex((seat) => seat.seatId === req.seatId) === -1) {
-      logger.info(`seat ${req.seatId} not valid`);
+      logger.info(cls,`seat ${req.seatId} not valid`);
       throw new NotFoundError("seat");
     }
     const seats = await bookingDataAccess.getBookedSeatsByFacilities(req);
     if (seats.findIndex((seat) => seat === req.seatId) > -1) {
-      logger.info(`seat ${req.seatId} not available to take`);
+      logger.info(cls,`seat ${req.seatId} not available to take`);
       throw new ConflictError("seat not available now, pick some other seat");
     }
+    logger.debug(cls,"fetch booked seats for booking request")
     const bookings = await bookingDataAccess.getBookedSeatsByUserAndDate(
       req.userId,
       req.date,
@@ -114,11 +121,13 @@ class SeatBookingService {
   public async cancelBookedSeat(cancelRequest: CancelRequest):Promise<void>{
     const bookedSeat = await bookingDataAccess.getBookedSeatById(cancelRequest.seatId)
     if(bookedSeat === null){
+      logger.info(cls,`seat ${cancelRequest.seatId} not available to cancel`);
       throw new NotFoundError("Seat Id");
     }
     const isUpdated = await bookingDataAccess.updateSeatStatusById(
       cancelRequest.seatId,Constants.SEAT_STATUS_CDE_CANCEL)
     if(!isUpdated){
+      logger.info(cls,`seat ${cancelRequest.seatId} cancelled`);
       throw new NotFoundError("seat id");
     }
   }
