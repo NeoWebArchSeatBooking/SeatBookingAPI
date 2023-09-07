@@ -22,7 +22,7 @@ export class PreferenceDataAccess {
       logger.debug(cls,`creating preference for ${userId}`) 
       const prefResp = await PreferenceModel.create({
           userId: userId,
-          preferenceType: req.type,
+          preferenceType: req.key,
           preferenceValue: req.value,
           preferenceActive: Constants.ACTIVE_YES   
       });
