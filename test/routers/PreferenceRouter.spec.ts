@@ -12,7 +12,7 @@ jest.mock("../../src/dataaccess/providers/InfraProvider")
 
 describe("PreferenceRouter",()=>{
 
-    const path = "/v1/preference"
+    const path = "/v1/preferences"
     beforeAll(()=>{
         preferenceDataAccess
         dbProvider
