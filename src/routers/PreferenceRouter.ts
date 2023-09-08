@@ -3,7 +3,7 @@ import { ResponseHelper, Validator, logger } from "../helpers";
 import { BaseResponse, PreferenceRequest, PreferenceResponse, UserRequest } from "../models";
 import { preferenceService } from "../services/PreferenceService";
 
-@Controller("/preference")
+@Controller("/preferences")
 export class PreferenceRouter {
 
     @Get()
