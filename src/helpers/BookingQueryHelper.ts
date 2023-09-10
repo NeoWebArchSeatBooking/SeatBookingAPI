@@ -1,4 +1,5 @@
 import { Op } from "sequelize"
+import { AppHelper } from "./AppHelper"
 
 export class BookingQueryHelper{
 
@@ -55,6 +56,22 @@ export class BookingQueryHelper{
     public andUserId(userId?: string){
         if(userId){
             this.whereClause.bookingUserId = userId
+        }
+        return this
+    }
+
+    public andUserIdLike(userId?: string){
+        if(userId){
+            this.whereClause.bookingUserId = {
+                [Op.like]: '%'+userId+'%'
+            }    
+        }
+        return this
+    }
+
+    public andStatus(status?:string){
+        if(status){
+            this.whereClause.bookingStatus = AppHelper.getStatusCde(status)
         }
         return this
     }

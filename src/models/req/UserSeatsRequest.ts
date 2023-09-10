@@ -21,4 +21,6 @@ export class UserSeatRequest extends UserRequest{
     blockId: string
     @IsOptional()
     user: string
+    @IsOptional()
+    status: string
 }

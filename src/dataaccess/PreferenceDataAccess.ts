@@ -11,7 +11,7 @@ export class PreferenceDataAccess {
   public async getPreferences(userId: string): Promise<PreferenceModel[]>{
     logger.debug(cls,`fetching preferences for ${userId}`)    
     const preferences = await PreferenceModel.findAll({
-      where: {userId},
+      where: {userId,preferenceActive:Constants.ACTIVE_YES},
       order: ['id']
     });
     return preferences;

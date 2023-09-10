@@ -6,7 +6,7 @@ import { logger } from "../helpers/Logger";
 export class LogMiddleware implements KoaMiddlewareInterface {
 
   async use(ctx: Context, next: (err?: any) => Promise<any>): Promise<any> {
-      const request = `${ctx.request.method} ${ctx.request.path}`
+      const request = `${ctx.request.method} ${ctx.request.path}?${ctx.request.querystring}`
       logger.info({request},'begin to process')
       const startDate = Date.now()
       await next();

@@ -26,6 +26,11 @@ export class AppHelper{
             "unknown"
     }
 
+    public static getStatusCde(statusTxt: string): string{
+        return Constants.SEAT_STATUS_TXT_CODE_MAP.get(statusTxt) ?? 
+            "A"
+    }
+
     public static isGreaterThanCurrentDate(date: Date, days: number){
         date.setHours(0,0,0,0)
         const currentDate = new Date()
