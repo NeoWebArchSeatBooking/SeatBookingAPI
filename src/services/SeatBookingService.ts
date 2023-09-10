@@ -28,7 +28,7 @@ class SeatBookingService {
       searchInfo.items = this.mapToBooking(bookingSeats);      
     }else{
       logger.debug(cls,"get booked seats for user")
-      const { bookingSeats, count }  = await bookingDataAccess.getBookedSeatsByUser(userReq.userId,userReq.offset,userReq.limit);
+      const { bookingSeats, count }  = await bookingDataAccess.getBookedSeatsByUser(userReq.userId,userReq.offset,userReq.limit,userReq.status);
       searchInfo.total = count
       searchInfo.items = this.mapToBooking(bookingSeats);       
     }
