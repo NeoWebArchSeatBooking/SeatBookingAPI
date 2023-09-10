@@ -17,7 +17,8 @@ export class BookingDataAccess {
       .andLocationId(req.locationId)
       .andBlockId(req.blockId)
       .andDateBetween(AppHelper.reformateDate(req.fromDate),AppHelper.reformateDate(req.toDate))
-      .andUserId(req.user)
+      .andUserIdLike(req.user)
+      .andStatus(req.status)
       .getWhere()
     
     const { rows,count } = await BookingModel.findAndCountAll({
@@ -29,10 +30,15 @@ export class BookingDataAccess {
     return {bookingSeats,count};
   }
 
-  public async getBookedSeatsByUser(userId: string,offset:number=0,limit:number=25): Promise<{bookingSeats:BookingModel[],count:number}> {
+  public async getBookedSeatsByUser(userId: string,offset:number=0,limit:number=25, status?: string): Promise<{bookingSeats:BookingModel[],count:number}> {
     logger.debug(cls,"fetching booked seats for user")
+    const whereCluse = BookingQueryHelper.getBuilder()
+      .andUserId(userId)
+      .andStatus(status)
+      .getWhere()
+    
     const { rows,count } = await BookingModel.findAndCountAll({
-      where: { bookingUserId: userId },
+      where: whereCluse,
       offset,
       limit
     });
