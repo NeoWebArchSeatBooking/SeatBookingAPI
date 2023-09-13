@@ -1,6 +1,6 @@
 import { ValidationError, validate } from "class-validator";
 import { AppError, ValidationErr } from "../errors/AppErrors";
-import { PreferenceRequest, SeatSearchRequest } from "../models";
+import { PreferenceRequest, SeatBookRequest, SeatSearchRequest } from "../models";
 import { CancelRequest } from "../models/req/CancelRequest";
 import { UserSeatRequest } from "../models/req/UserSeatsRequest";
 import { AppHelper } from "./AppHelper";
@@ -8,6 +8,23 @@ import { AppHelper } from "./AppHelper";
 export class Validator{
     
     public static async validateUserSeatRequest(userSeatRequest: UserSeatRequest){
+        try{
+          const errors:ValidationError[] = await validate(userSeatRequest,{always:true});
+          if(errors.length > 0){
+            let messages = "["
+            for(const er of errors){
+                for(const msg in er.constraints){
+                    messages += er.constraints[msg]+','
+                }
+            }
+            throw new ValidationErr(messages+"]")
+           }
+        } catch(err:any){
+            throw new AppError(err.code ?? 500,err.message)
+        }
+    }
+
+    public static async validateSeatBookingRequest(userSeatRequest: SeatBookRequest){
         try{
           const errors:ValidationError[] = await validate(userSeatRequest,{always:true});
           if(errors.length > 0){
