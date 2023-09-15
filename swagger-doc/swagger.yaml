@@ -8,7 +8,7 @@ servers:
 tags:
   - name: facilities
     description: All facility operations
-  - name: preference
+  - name: preferences
     description: User preferences
   - name: booking
     description: All seat booking operations
@@ -82,7 +82,7 @@ paths:
       - name: blockId
         in: query
         description: specific block
-        required: true
+        required: false
         schema:
           type: string
       - name: floorId
@@ -355,10 +355,10 @@ paths:
                 _meta:
                   status: 500
                   message: internal server error
-  /preference:
+  /preferences:
     get:
       tags:
-      - preference
+      - preferences
       security:
       - bearerAuth: []
       summary: fetch list of preferences added by user
@@ -392,7 +392,7 @@ paths:
                   message: internal server error
     post:
       tags:
-      - preference
+      - preferences
       security:
       - bearerAuth: []
       summary: create a preference
@@ -430,10 +430,10 @@ paths:
                 _meta:
                   status: 500
                   message: internal server error
-  /preference/{id}/cancel:
+  /preferences/{id}/cancel:
     patch:
       tags:
-      - preference
+      - preferences
       security:
       - bearerAuth: []
       summary: cancel the preference

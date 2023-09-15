@@ -4,7 +4,7 @@ import { UserRequest } from "./UserRequest";
 export class SeatSearchRequest extends UserRequest {
     @IsNotEmpty()
     locationId: string
-    @IsNotEmpty()
+    @IsOptional()
     blockId: string
     @IsOptional()
     floorId: string
