@@ -38,7 +38,7 @@ class InfraDataAccess{
             
             const filteredSeats = seatDocs.filter((seat)=>{
                 return seat.locationId === locId
-                && seat.blockId === blkId
+                && ( !blkId || seat.blockId === blkId )
                 && ( !flrId || seat.floorId === flrId )
             })
             return filteredSeats
