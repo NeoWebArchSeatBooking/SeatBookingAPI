@@ -11,7 +11,7 @@ export class ResponseHelper {
   }
 
   public static setFailureResponse(response: BaseResponse,err:AppError){
-    const metadata: Metadata = new Metadata(err.code,err.message)
+    const metadata: Metadata = new Metadata(err.code ?? 500,err.message)
     response._meta = metadata;
   }
 

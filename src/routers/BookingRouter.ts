@@ -66,6 +66,7 @@ export class BookingRouter {
     req.role = role;
     const response = new BaseResponse();
     try {
+      await Validator.validateSeatBookingRequest(req)
       await bookingService.bookASeat(req);
       ResponseHelper.setSuccessResponse(response);
     } catch (err) {
