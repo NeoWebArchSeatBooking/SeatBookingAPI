@@ -36,7 +36,7 @@ fetch available seats for the given inputs such as location, block, floor and da
 | ---- | ---------- | ----------- | -------- | ---- |
 | date | query | dd-mm-yyyy format | Yes | string |
 | locationId | query | specific location id | Yes | string |
-| blockId | query | specific block | Yes | string |
+| blockId | query | specific block | No | string |
 | floorId | query | specific floor | No | string |
 | availability | query | returns available seats if true or unavailable seats if false. | No | string |
 ##### Responses
@@ -115,7 +115,7 @@ update the status of user's booked seat, for example cancelling a booked seat
 | Security Schema | Scopes |
 | --- | --- |
 | bearerAuth | |
-### /preference
+### /preferences
 #### GET
 ##### Summary:
 fetch list of preferences added by user
@@ -146,7 +146,7 @@ create a new preference for user
 | Security Schema | Scopes |
 | --- | --- |
 | bearerAuth | |
-### /preference/{id}/cancel
+### /preferences/{id}/cancel
 #### PATCH
 ##### Summary:
 cancel the preference

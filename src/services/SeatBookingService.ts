@@ -63,10 +63,10 @@ class SeatBookingService {
     if(req.blockId){
       const block = loc.blocks?.find((block) => block.blockId === req.blockId);
       if (block === undefined) throw new NotFoundError("block");
-    }
-    if(req.floorId ){
-      const floor = block.floors?.find((flr) => flr.floorId === req.floorId);
-      if (floor === undefined) throw new NotFoundError("floor");
+      if(req.floorId){
+        const floor = block.floors?.find((flr) => flr.floorId === req.floorId);
+        if (floor === undefined) throw new NotFoundError("floor");
+      }
     }
     logger.debug(cls,"fetch seats for facility request")
     const seatInfos = await infraDataAccess.getSeatsByFields(
