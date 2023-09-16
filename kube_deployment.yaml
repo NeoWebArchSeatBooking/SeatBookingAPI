@@ -52,6 +52,8 @@ spec:
           ports:
             - containerPort: 4000
           env:
+            - name: CHECK_DB
+              value: enabled
             - name: DB_HOST
               value: 192.168.65.2
             - name: NODE_ENV
