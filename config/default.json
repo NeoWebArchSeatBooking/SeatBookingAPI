@@ -5,7 +5,7 @@
     "docs": "/v1/api-docs"
   },
   "clients": {
-    "idp": "http://localhost:3000/v1/idp/status"
+    "idp": "http://localhost:3000/v1/idp/profile"
   },
   "logger": {
     "name": "SeatBookingAPI",
