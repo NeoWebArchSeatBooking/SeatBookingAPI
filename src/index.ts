@@ -9,7 +9,7 @@ import { BookingRouter, InfraRouter, PreferenceRouter } from "./routers";
 const yamljs = require("yamljs"); // eslint-disable-line  @typescript-eslint/no-var-requires
 const spec = yamljs.load("./swagger-doc/swagger.yaml");
 
-if(pocess.env.CHECK_DB){
+if(process.env.CHECK_DB){
   dbProvider.isDBConnected().catch((err) => {
     logger.error(err);
     process.exit(1);
