@@ -9,15 +9,17 @@ import { BookingRouter, InfraRouter, PreferenceRouter } from "./routers";
 const yamljs = require("yamljs"); // eslint-disable-line  @typescript-eslint/no-var-requires
 const spec = yamljs.load("./swagger-doc/swagger.yaml");
 
-dbProvider.isDBConnected().catch((err) => {
-  logger.error(err);
-  process.exit(1);
-});
-
-infraProvider.isProviderConnected().catch((err)=>{
-  logger.error(err);
-  process.exit(1);
-})
+if(process.env.CHECK_DB){
+  dbProvider.isDBConnected().catch((err) => {
+    logger.error(err);
+    process.exit(1);
+  });
+  
+  infraProvider.isProviderConnected().catch((err)=>{
+    logger.error(err);
+    process.exit(1);
+  })
+}
 
 const cors = {
   origin: "*",
