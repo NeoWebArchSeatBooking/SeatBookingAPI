@@ -12,7 +12,9 @@ export class PreferenceDataAccess {
     logger.debug(cls,`fetching preferences for ${userId}`)    
     const preferences = await PreferenceModel.findAll({
       where: {userId,preferenceActive:Constants.ACTIVE_YES},
-      order: ['id']
+      order: [
+        ['id', 'DESC']
+      ],
     });
     return preferences;
   }

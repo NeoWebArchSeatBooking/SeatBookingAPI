@@ -38,6 +38,15 @@ class SeatBookingService {
   public async getAvailableSeats(req: SeatSearchRequest): Promise<SeatInfo[]> {
     logger.debug(cls,"get available seats")
     const seatDetails = await this.getInfraSeats(req);
+    logger.debug(cls,"fetch booked seats for booking request")
+    const bookings = await bookingDataAccess.getBookedSeatsByUserAndDate(
+      req.userId,
+      req.date,
+      Constants.SEAT_STATUS_CDE_ACTIVE
+    );
+    if (bookings.length > 0){
+      throw new ConflictError("You've already booked a seat on this date!");
+    }
     const seats = await bookingDataAccess.getBookedSeatsByFacilities(req);
     const updatedSeatInfos: SeatInfo [] = []
     seatDetails.forEach((seatDet)=>{
@@ -90,16 +99,8 @@ class SeatBookingService {
     const seats = await bookingDataAccess.getBookedSeatsByFacilities(req);
     if (seats.findIndex((seat) => seat === req.seatId) > -1) {
       logger.info(cls,`seat ${req.seatId} not available to take`);
-      throw new ConflictError("seat not available now, pick some other seat");
+      throw new ConflictError("Seat not available now!, please choose some other seat");
     }
-    logger.debug(cls,"fetch booked seats for booking request")
-    const bookings = await bookingDataAccess.getBookedSeatsByUserAndDate(
-      req.userId,
-      req.date,
-      Constants.SEAT_STATUS_CDE_ACTIVE
-    );
-    if (bookings.length > 0)
-      throw new ConflictError("user already has booked a seat on the date");
     await bookingDataAccess.createBooking(req);
   }
 
