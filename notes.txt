@@ -1,0 +1,25 @@
+#CREATE USER 'sbuser' IDENTIFIED BY 'seatbookingpwd';
+#GRANT ALL PRIVILEGES ON *.* TO 'sbuser'@'localhost' WITH GRANT OPTION;
+#CREATE USER 'sbuser'@169.254.33.150 IDENTIFIED BY 'seatbookingpwd';
+#GRANT ALL PRIVILEGES ON *.* TO 'sbuser'@169.254.33.150 WITH GRANT OPTION;
+#FLUSH PRIVILEGES
+
+CREATE USER 'idpuser'@'localhost' IDENTIFIED BY 'idppwd';
+GRANT ALL PRIVILEGES ON idp.* TO 'idpuser'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+// logging - ok 
+// unit test - in prog
+// book a seatbooking - ok 
+// preference
+// apply preference
+// fetch for all floors
+// fetch for pagination 
+
+// check it in k8n - ok
+// TODO
+// date > current date validation
+admin view - user id filter
+// availability filter in search
+preferences
+// UprSDfnEElWcb3i8
