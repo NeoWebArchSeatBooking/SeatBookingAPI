@@ -14,5 +14,5 @@ target
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 coverage
-notes.txt
+notes.*
 kube_secrets.yaml
