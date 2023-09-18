@@ -39,6 +39,9 @@ export class BookingDataAccess {
     
     const { rows,count } = await BookingModel.findAndCountAll({
       where: whereCluse,
+      order: [
+        ['id', 'DESC']
+      ],
       offset,
       limit
     });

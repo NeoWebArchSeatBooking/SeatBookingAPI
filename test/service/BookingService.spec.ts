@@ -194,7 +194,7 @@ describe("Seat Booking Service", () => {
       } catch (err: any) {
         expect(err).toBeInstanceOf(ConflictError);
         expect(err.message).toEqual(
-          "seat not available now, pick some other seat"
+          "Seat not available now!, please choose some other seat"
         );
       }
     });
