@@ -310,6 +310,8 @@ Start the server
 |Subscribes to |
 |----|
 |API Gateway|
+
+
 | Name                                   | Description | Another |
 | -------------------------------------- | ----------- | ------- |
 | bobby                                  | hadz        | com     |
