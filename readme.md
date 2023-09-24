@@ -199,8 +199,114 @@ Start the server
   npm start
 ```
 
+## API Canvas
 
-## Authors
+| Name               |Booking Service |
+|--------------------|-------------------------------|
+|Description| This service provides an API for create, fetch and cancel the seat bookings.
+|Capabilities          |    Seat Booking        |
 
-- [@DhamoSG](https://github.com/sgddaran)
+### Service API
 
+|Commands | Queries |
+|---------------|---|
+|Synchronous: bookASeat| getBookedSeats|
+|Synchronous: cancelSeat||
+
+|Non Functional Requirement| Covered |
+|----|--|
+|Availability |99/00%|
+|Book Search SLA| 2 secs|
+|Booking SLA | 2 sec |
+
+| Observability | |
+|-----|--|
+|health check endpoint|/health|
+
+### Implementation:
+|Domain Model|
+|--|
+|Booking|
+
+|Dependencies|
+|--|
+|InfraService: getInfraSeats|
+|Identity: authorization|
+
+|Subscribes to |
+|----|
+|API Gateway|
+
+-----
+
+| Name               | Infra Service |
+|--------------------|-------------------------------|
+|Description| This service provides an API for fetching infra information  and seat information for bookings.
+|Capabilities          |    Infrastructure Details        |
+
+### Service API
+
+|Commands | Queries |
+|---------------|---|
+|- | getInfras|
+|- | getInfraSeats |
+
+|Non Functional Requirement| Covered |
+|----|--|
+|Availability | 99.00% |
+|Fetch Infra | 2 secs|
+|Fetch Seats | 2 sec |
+
+| Observability | |
+|-----|--|
+|health check endpoint|/health|
+
+### Implementation:
+|Domain Model|
+|--|
+|Infrastructure|
+|Seat|
+
+|Dependencies|
+|--|
+|Identity: authorization|
+
+|Subscribes to |
+|----|
+|API Gateway|
+
+-----
+
+| Name               | Preferences Service |
+|--------------------|-------------------------------|
+|Description| This service provides an API for create, fetch and cancel the user preferences.
+|Capabilities          |    Preferences Management        |
+
+### Service API
+
+|Commands | Queries |
+|---------------|---|
+|Synchronous: createPreference| getPreferences|
+|Synchronous: cancelPreference||
+
+|Non Functional Requirement| Covered |
+|----|--|
+|Availability |99/00%|
+|Preference | 2 secs|
+
+| Observability | |
+|-----|--|
+|health check endpoint|/health|
+
+### Implementation:
+|Domain Model|
+|--|
+|Booking|
+
+|Dependencies|
+|--|
+|Identity: authorization|
+
+|Subscribes to |
+|----|
+|API Gateway|
