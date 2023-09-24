@@ -22,7 +22,7 @@ Seat Booking API is the REST based interface built on NodeJS which allows google
 |----|--|
 |Availability |90.00%|
 |Book Search SLA| 2 secs|
-|Booking SLA | 2 sec |
+|Booking SLA | 2 secs |
 
 | Observability | |
 |-----|--|
