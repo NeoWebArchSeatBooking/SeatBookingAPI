@@ -50,8 +50,10 @@ export class AuthMiddleware implements KoaMiddlewareInterface {
 
   private async setStatus(ctx: Context){
     if(ctx.body && (ctx.body as any)['_meta']){
-      logger.debug("setting http status code as response status");
-      ctx.status = (ctx.body as any)['_meta']['status']
+      const meta = (ctx.body as any)['_meta']
+      logger.debug(`setting http status code as response status ${meta}`);
+      ctx.status = meta['status']
+      if(ctx.status !== 200) ctx.message = meta['message']
     }
   }
 
