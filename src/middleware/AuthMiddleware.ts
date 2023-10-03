@@ -10,7 +10,7 @@ import { logger } from "../helpers/Logger";
 @Middleware({ type: "before" })
 export class AuthMiddleware implements KoaMiddlewareInterface {
   skipAuth(ctx: Context): boolean {
-    return ctx.request.path.indexOf("/api-docs") > -1;
+    return ctx.request.path.indexOf("/api-docs") > -1 || ctx.request.path.indexOf("/health") > -1;
   }
 
   setRequest(ctx: Context, data?: any) {

@@ -1,6 +1,5 @@
 # SeatBooking API
 Seat Booking API is the REST based interface built on NodeJS which allows google users to fetch a location & facility information to view floor & seats, set/fetch preferences, view booked history & fetch available seats on given specific criteria such as date, location & facility.
-
 ## Version: 1.0.0
 ## Pre-Requirements
 - Depends on MySql and MongoDB datasources for Booking and Infra data's respectively. 
@@ -8,6 +7,75 @@ Seat Booking API is the REST based interface built on NodeJS which allows google
 - API using the https://github.com/NeoWebArchSeatBooking/IdentityAPI to authenticate & authorize the given token
 
 ## API Reference
+| Name               |Booking Service |
+|--------------------|-------------------------------|
+|Description| This service provides an API for create, fetch and cancel the seat bookings and preference of booking, also fetch infra deatails.
+|Capabilities          |    Seat Booking, Infrastructure information        |
+
+#### Service API
+| Commnands                              | Queries |
+| -------------------------------------- | --------|
+| Synchronous                            |         |
+| <ul><li>bookASeat</li><li>cancelSeat</li><li>createPreference</li><li>cancelPreference</li></ul> | <ul><li>getBookedSeats</li><li>getInfras</li><li>getInfraSeats</li><li>getPreferences</li></ul>       | 
+
+|Non Functional Requirement| Covered |
+|----|--|
+|Availability |90.00%|
+|Book Search SLA| 2 secs|
+|Booking SLA | 2 secs |
+
+| Observability | |
+|-----|--|
+|health check endpoint|v1/health|
+
+### Implementation:
+|Domain Model|
+|--|
+|Booking|
+|Preference|
+
+|Dependencies|
+|--|
+|Identity: authorization|
+
+|Subscribes to |
+|----|
+|API Gateway|
+
+## Swagger Document
+```
+http://host:port/v1/api-docs
+```
+
+## Local Setup
+Refer Pre-Requirement section for dependency setup.
+
+Clone the project
+
+```bash
+  git clone https://github.com/NeoWebArchSeatBooking/SeatBookingAPI.git
+```
+
+Go to the project directory
+
+```bash
+  cd SeatBookingAPI
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm start
+```
+
+## API Contract
+
 ### /facilities
 #### GET
 ##### Summary:
@@ -166,41 +234,3 @@ cancel the preference
 | Security Schema | Scopes |
 | --- | --- |
 | bearerAuth | |
-
-## Swagger Document
-```
-http://host:port/v1/api-docs
-```
-
-## Local Setup
-Refer Pre-Requirement section for dependency setup.
-
-Clone the project
-
-```bash
-  git clone https://github.com/NeoWebArchSeatBooking/SeatBookingAPI.git
-```
-
-Go to the project directory
-
-```bash
-  cd SeatBookingAPI
-```
-
-Install dependencies
-
-```bash
-  npm install
-```
-
-Start the server
-
-```bash
-  npm start
-```
-
-
-## Authors
-
-- [@DhamoSG](https://github.com/sgddaran)
-
